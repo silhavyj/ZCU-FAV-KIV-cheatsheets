@@ -1,0 +1,25 @@
+				Spos - VZOR 2020
+
+Jmeno:
+Datum:
+Celkem:
+Zapocet:
+
+
+( 1 bod )
+Nastavte ssh v linuxu tak, aby  bylo přístupné pouze ze stroje ares.fav.zcu.cz.
+
+( 1 bod )
+Nastavte přihlášení přes ssh tak, aby akceptovalo pouze přihlášení pomocí SSH klíče, který nově vytvoříte na serveru ares.fav.zcu.cz
+
+( 3 body )
+Nainstalujte v linuxu DNS a vytvořete DNS záznam pro test.spos, který bude ukazovat na veřejnou IP linuxu a záznam pro doručování pošty na IP 10.10.10.10/8 ( primární ) a 192.168.1.10/24 ( sekundární )
+
+( 1 bod )
+Vytvořte Raid5 ze všech volných disků a to tak, aby správně sestavil i po restartu OS nebo při použití live-cd.
+
+( 2 body )
+Vytvořte LVM skupinu vgspos nad nově vytvořeným raidem5, v LVM vytvořtě svazek www o velikosti 100MB, naformátujte jej na XFS a připojete jej do /www pomocí LABEL, tak aby zařízení bylo připojené i po startu OS.
+
+( 2 bod )
+Nainstalujte WWW server s podporou PHP a vytvořte v něm virtual pro test.spos, který bude mít dokument_root v /www/test.spos a na titulní straně bude zobrazovat verzi použitého PHP.

@@ -1,0 +1,174 @@
+- syntaktická analyza
+  - <img src="../images/03/02.png">
+  - gramatika - formální definice
+    - G = (𝑁, Σ, 𝑃, 𝑆)
+      - N - konečná mn. neterminálů, neobsahuje řetězce generované G
+      - Σ - konečná neprázdná množina neobsahující prvky z N
+      - P - konečná mn. produkčních pravidel: 𝑁 → (Σ ∪ 𝑁)∗
+      - S - počáteční symbol
+    - L(G) - jazyk generovaný gramatikou G
+      - <img src="../images/03/01.png">
+  - základní derivace
+    - prává - expanduje pravý neterminál
+    - levý - expanduje levý neterminál
+  - vetná forma
+    - řetězec je větná forma pokud platí
+    - <img src="../images/03/03.png">
+  - Věta/slovo
+    - řetězec se označuje jako větná forma, pokud
+    - <img src="../images/03/04.png">
+  - Fráze
+    - Řetězec 𝜆 = 𝛼𝛽𝛾 je větnou formou, pak je podřetězec 𝛽 frází větné formy 𝜆 vzhledem k neterminánímu
+      symbolu 𝐴, pokud platí
+    - <img src="../images/03/05.png">
+  - Jednoduchá fráze
+    - fráze kde 𝐴 ⇒ 𝛽 (tedy existuje pravidlo 𝐴 → 𝛽)
+  - L-fráze
+    - nejlevější jednoduchá fráze
+  - <img src="../images/03/06.png">
+  
+  - Konstrukce derivačního stromu
+    - Shora dolů (Kouknu a vidím)
+      - výběr správného pořadí operací k derivovaání
+    - zdola nahoru (obtížnější)
+      - postupná redukce slova na větné fráze až na počáteční symbol
+      - vymezit L-fráze a hledat jejich redukci
+    - postupy
+      - Backtracking (analýza s návratem)
+        - univerzální ale neefektivní
+      - Deterministická analýza
+        - funguje jen pro některé druhy BKG
+          - automatiky (deterministické zásobníkové)
+          - volání procedur
+  - Víceznačnost gramatiky
+    - slovo s je viceznačné pokud existují alespoň 2 různé derivační stromy k odvození
+    - nutná podm. jednoznačnosti
+      - pro žádný neterminál neexistuje pravo i levorekurzivní pravidlo - nemohu se rozhodnout
+    - může (ale nemusí) existovat ekvivalentní jednoznačná gramatika
+    - <img src="../images/03/07.png">
+    - je možné zapsat jednoznačně ale garmatika může být složitější
+    - gramatika je víceznačná pokud pro rekuzivní neterminál A existují alespoň 2 pravidla
+      - jedno rekurzivní zprava, se shodným prefixem symbolu A s druhým pravidlem
+      - jedno rekurzivní zleva, se shodným prefixem symbolu A s druhým pravidlem
+  - Eliminace nejednoznačnosti
+    - seskupování operátorů podle priority
+    - nastavení směru rekurze podle asociativity operátorů
+    - odstranění obousměrné rekurze doplněním dalších symbolů
+    - <img src="../images/03/08.png">
+    - <img src="../images/03/09.png">
+  - Jednoduchá analýza shora dolů
+    - připočarý postup
+    - čtu zleva doprava po tokenech
+    - na základě tokenu použiju pravidlo podle toho čím začíná
+    - levé derivace
+    - <img src="../images/03/10.png">
+    - automatizované přístupy se zásobníkovým automatem
+      - automatické generování gramatik
+      - snazší formální postup
+  - Rekurzivní sestup
+    - snazčí a průhlednější implementace
+      - sledování co program dělá a úprava funkcionality
+      - automatické generátory (antlr)
+      - snadná implementace backtrakingu
+      - <img src="../images/03/11.png">
+      - <img src="../images/03/12.png">
+    - problémy:
+      - pokud je na vstupu něco jiného 
+        - syntaktická chyba
+      - pravá strana neobsahuje terminál 
+        - analýza do hloubky a zjistit začátky fuknce first()
+      - levá rekurze
+        - nekonečný cyklus
+      - dvě pravé strany stejné začátky
+        - vybrat podle něčeho (lookahead)
+      - na pravé straně prázdný symbol
+        - odstraním ho
+    - úpravy
+      - ekvivaletní úpravy jako u rovnic (nesmí se změnit jazyk)
+        ‒ Odstranění zbytečných symbolů
+        ‒ Odstranění prázdných pravidel
+        ‒ Odstranění jednoduchých pravidel a cyklů
+        ‒ Substituce pro odstranění libovolného pravidla
+        ‒ Odstranění levé rekurze
+    - Funkce First()
+      - čím může začínat řetězec
+      - vstup: libovolný řetězec
+      - výstup: množina terminálů kterými může řetězec začínat
+      - <img src="../images/03/13.png">
+      - <img src="../images/03/14.png">
+    - Funkce Follow()
+      - zjistí co může následovat za daným řetězcem
+      - nepř co když přijde prazdný symbol
+      - vstup: symbol
+      - výstup: množina terminálů které mohou následovat
+      - <img src="../images/03/15.png">
+  - Hledání zbytečných symbolů
+    - symboly které se nepodíli na genorování žádného slova
+    - nedosažitelný symboly
+    - indikují probléím v návrhu
+    - postup
+      - Označíme všechny 𝑥 ∈ T
+      - Označíme všechny 𝑋 ∈ 𝑁, pro něž existuje pravidlo 𝑋 → 𝛼, kde 𝛼 obsahuje jen označené symboly
+      - opakuji dokud můžu označovat
+      - neoznačené symboly jsou zbytečné
+      - příklad hlednání zbytečných symbolů
+      - <img src="../images/03/16.png">
+      - příklad hlednání nedostupných symbolů
+      - <img src="../images/03/17.png">
+  - Odstranění E pravidel
+    - při rekurzivním sestupu nevím kdy pravou stranu puožít
+    - postup:
+    - <img src="../images/03/18.png">
+    - <img src="../images/03/19.png">
+  - Odstranění jednoduchých pravidel
+    - přepsání jednoho terminálu na druhý (A -> B)
+    - lehčí orientace
+    - odstraěnní prostou substitucí
+    - <img src="../images/03/20.png">
+  - Odstranění cyklů
+    - existence cyklu implikuje jednoduchá pravidla
+      - jejich odstranění by mělo odstranit cykly
+    - s cykly roste složitost a nepřidávají novou informaci a těžko se ukončují
+    - postup:
+      - gramatika musí generovat po odstranění stejný jazyk
+      - <img src="../images/03/21.png">
+  - Odstranění levé rekurze
+    - popis levorekurzivního pravidla
+      - <img src="../images/03/22.png">
+    - odstranění bez e pravidel
+      - <img src="../images/03/23.png">
+    - odstranění s e pravidly
+      - <img src="../images/03/24.png">
+    - srovnání
+      - <img src="../images/03/25.png">
+  - Nepřímá levá rekurze a vicenásobná levá rekurze
+    - <img src="../images/03/26.png">
+  - Zásobníkový automat
+    - podobně jako KA
+    - jednocestný (nevrací se)
+    - nedeterministický
+    - akceptační (ano/ne)
+    - nekonečná paměť (zásobník)
+    - <img src="../images/03/27.png">
+  - Automat pro analýzu shora dolů
+    - odvozuje slovo z kořene jazyka
+    - vstupní abeceda - terminální symboly jazyka
+    - abeceda zásobníku - teminály i neterminály jazyka
+    - v zásobníku začně s kořenem
+    - operace
+      - expanze - nahradí neterminál na vrcholu některou pravou stranou
+      - Srovnání – porovná (a odstraní) symbol ze vstupu a z vrcholu zásobníku
+    - Akceptace – prázdný vstup i zásobník (= jen jeden pracovní stav)
+    - <img src="../images/03/28.png">
+  - Automat pro analýzu zdola nahoru
+    - hledá od slova cestu ke kořeni jazyka
+      - Vstupní abeceda – terminální symboly jazyka
+      - Abeceda zásobníku – terminální i neterminální symboly jazyka a další podle potřeby
+      - Začne s prázdným zásobníkem a přesouvá do něj vstup
+      - Operace
+        - Přesun (shift) – přesune symbol ze vstupu na vrchol zásobníku
+        - Redukce (reduce) – nahradí pravou stranu v zásobníku odpovídající levou stranou
+      - Akceptace – prázdný vstup, kořen jazyka v zásobníku
+      - Implementován v yacc
+    - <img src="../images/03/29.png">
+    - <img src="../images/03/30.png">

@@ -1,0 +1,207 @@
+- obchodni parametry dodavky
+    - kdyz neco porizujeme tak nas zajimaji 4 parametry
+        - cena
+            - porizovaci
+            - provozni
+            - celkove (TCO = Total cost of ownership), navratnost investic (ROI = Return on Investment)
+        - velikost
+            - rozsah (scope)
+            - slozitost
+        - cas
+        - kvalita + dalsi parametry (napr vhodnost)
+
+        <img src="../img/04-nabidka_a_poptavka/01.png">
+
+    - parametry jsou provazane => zlepseni jednoho parametru obvykle znamena ustupek jinde (trade-off)
+
+- studie proveditelnosti
+    - obsahuje
+        - metadata (historie uprav, zkratky, klicova slova, obsah, ...)
+        - kontaktni udaje (zadavatel projektu, zpracovatel studie)
+        - uvod / executive summary
+            - => jasne se z toho pochopi o cem studie je a JAK DOPADNE
+        - soucasny stav
+            - k cemu, jak a kde se to pouziva
+            - jaka je architektura
+            - jake jsou systemove naroky
+            - existuji nejaka API?
+        - problem (= pozadavky)
+        - analyza - mozne zpusoby reseni; popis jednotlivych variant
+            - funkcionalita, technologie, architektura
+            - SWOT
+            - analyza rizik (+ jak jim predejit; mitigace)
+                - riziko = { ppst, dopad }
+                - mitigace
+                    - ignorovat (kdyz je mala ppst)
+                    - prijmout (kdyz nastane tak tomu budeme nejak celit -> pripraveny protokol jak)
+                    - protiopatreni (napr hasici system v serverovne)
+                    - delegovat (napr pojisteni, danovy poradce zodpovedny za chyby, atd.)
+            - odhad lidskych zdroju, casu, financni odhad, harmonogram (hruby plat projektu)
+        - zaver
+        - muze take obahovat zkousky, testy nebo prototypy (PoC, PoT)
+
+- RFI - request for information
+    - "kdyz chceme neco po trhu"
+    - "mame problem a hledame reseni"
+    - jeste uplne nevime co chceme
+    - resime nejaky problem - oslovime par firem a firmy vy nam reknete jake produkty v teto oblasti mate, jake s nimi mate zkusenosti + reference
+    - prvni faze RFP ("jednodu RFP")
+        - RFP = request for proposal (poptavka)
+    - odpovedi mohou mit ruzny format
+        - studie proveditelnosti
+        - case study = studie jednoho nebo vice pripadu za ucelem aplikace ziskanych poznatku
+            - napr pouziti MongoDB pro high-performance aplikace
+    - obsah
+        - zadavatel
+        - problem
+        - ramcove pozadavky, omezeni
+        - cenova predstava (pouze orientacni)
+        - casova predstava (harmonogram)
+        - kriteria vyberu
+        - kriteria na uchazece (kvalifikace + reference)
+        - struktura odpovedi
+
+- poptavka
+    - zadavatel chce realizovat nakup
+    - obsah
+        - metadata
+        - zadavatel + kontakt pro dotazy
+        - predmet poptavky (muze vychazet ze studie proveditelnosti)
+            - problem
+            - preferovane reseni (pokud existuje)
+            - ramcove pozadavky, omezeni
+            - predpokladany casovy rozsah
+            - cenova predstava
+        - doba a misto plneni
+        - platebni podminky
+        - misto, zpusob a termin doruceni nabidek
+        - termin otevreni obalek a zpusob
+        - KRITERIA HODNOCENI NABIDEK
+        - kriteria na uchazece - kvalifikacni pozadavky + reference
+        - povinnosti - dodavatel, zadavatel
+        - struktura odpovedi (aby je slo lepe porovnavat, nejlepe treba sablona)
+
+- nabidka
+    - metadata
+    - zakladni informace o projektu
+        - zadavatel
+        - dodavatel
+        - projekt - predmet nabidky
+    - executive summary - shrnuti nabidky
+    - popis reseni
+    - diskuze splneni pozadavku zadavatele
+        - prokazani kvalifikace
+        - obraty
+        - certifikace
+        - reference
+    - navrhovany harmonogram realizace
+    - cenova nabidka
+    - prilohy
+        - navrh cmlouvy o dilo
+        - cestne prohlaseni - ze jsme se seznamili s pozadavky, udaje jsou pravdive, splnujeme pozadavky, ...
+        - vypis z trestniho rejstriku
+        - vypis z obchodniho rejstriku
+        - reference na predchozi projekty (zadavatel + kontakt) 
+
+- obchodni dokumenty
+    - certifikace
+        - statni normalizacni certifikace - v IT moc nejsou
+        - oborove certifikace (nezavisla organizace) - napr ISO
+        - certifikovane reseni (vendorem)
+
+    - reference
+        - dokald toho ze neco umime
+        - davaji se do priloh
+        - zdroje - verohodne a aktualni!
+        - typy zdroju
+            - slepe ("vyznamny telco operator v CR")
+            - zakaznicka (vyjmenovani zakaznik - "ABC s.r.o")
+        - zakaznici to berou casto jako marketing (zejmena pokud se implementovalo neco zajimaveho nebo revolucniho)
+    
+    - case study
+        - muze byt forma zpracovani reference - uvadi jak jsme uspesne implementovali nejake reseni pro firmu xy
+        - marketingovy material
+
+- hodnoceni nabidek
+    - vhodny je metodicky postup - dopredu vime jak budeme postupovat
+    - kriteria - napr financni, vykonove, atd => vypocet celkoveho hodnoceni
+        - soucet bodu
+        - primerna znamka
+        - vahy, vzorce
+    - tvrda a mekka kriteria
+        - tvrda = cena, kvalita vyjadrena poctem vadnych kusu, ...
+        - mekka = ergonomie, umelecky dojem => obecne nejlze exaktne merit
+
+- PoT (Proof of Technology)
+    - demonstrujeme funkcnost reseni s generickymi (predgenerovanymi) daty
+    - technlogicke nebo produktove DEMO
+    - ukazka funkcnosti (kompletniho) reseni
+    - overeni pro dane prostredi 
+        - technicke: OS, integreace
+        - trzni: jazyk, velikost zakaznika
+    - obvykle zdarma - dodavatel ma nejake demo se kterym obchazi zakazniky
+    - trvani: hodiny az dny
+
+- PoC (Proof of Concept)
+    - demonstruje funkcnost reseni uz s daty konkretniho zakaznika
+    - overeni vhodnosti reseni pro konkretniho zakaznika
+    - overeni predpokladu (TOC = total cost of ownership a ROI = return on investment)
+    - identifikace problemovych mist a rizik implementacniho projektu
+    - zjisteni odhadu pracnosti a slozitosti
+    - upresneni pozadavku zakaznika
+    - obvykle placene
+    - trvani: dny az tydny
+
+- hlavni rozdil mezi PoT a PoC
+    - PoC - zamereny vice na business (libi se zakaznikovi, plni jeho potreby?)
+    - PoT - zamereny na technologie (funguje to technologicky?)
+
+- Zakon o verejnych zakazkach
+    - = porizovani IT z verejnych penez
+    - upravuje postupy pri zadavani VZ -> soutez o navrh
+    - duraz je kladen na transparentnost - veskere dokumenty jsou verejne, vcetne smlouvy s viteznym uchazecem
+    - zakaz diskriminace
+    - zadavetele, kteri se musi ridit zakonem o VZ:
+        - ti co utraceji verejne penize - CR, CNB, statni prispevkove organizace, kraje, obce, ...
+        - CENTRALNI ZADAVATEL - zajistuji vyberove rizeni pro mensi organizace jako skoly 
+    - rozsah
+        - maleho rozdahu - do 2mil pro sluzby nebo do 6mil pro stavby
+            - nemusi se provaded zadavaci rizeni ale porad plati transparentnost, rovnost a zakaz diskriminace
+        - podlimitni
+        - nadlimitni - radove stovky milionu
+            - vyznamna zakazka
+                - nad 50 min - schvaluje zastupitelstvo samospravy
+                - nad 300 mil - schvaluje vlada
+        - druhy rizeni (podle rozsahu zakazky)
+            - zjednodusenne podlimitni rizeni
+            - otevrene- muze se prihlasit kdokoliv
+            - uzsi rizeni - jen osloveni uchazeci
+            - jednaci rizeni bez uverjneni - kdyz se vi ze je z povahy veci jen jeden uchazec
+                - timto zpusobem se jich provadi nejvice
+
+- zjednodusenne podlimitni rizeni
+    - zadavatel nesmi komunikovat s pontencialnimi dodavateli -> jen zverejni vyzvu
+    - predpoklady
+        - zakladni kvalifikacni predpoklady
+            - nebyl odsouzen
+            - neni v likvidaci
+            - nema danove nedoplatky
+        - profesni kvalifikacni predpoklady
+            - vypis z obchodniho rejstriku
+            - oklad o odborne zpusobilosti (zivnostensky list)
+        - ekonomicke & financni kvalifikacni pozadavky
+            - pojistna smlouva (ze kdyz neco rozbijou tak to uhradi?)
+            - udaj o celkovem obraru
+        - technicke kvalifikacni pozadavky
+            - reference
+            - nekdy muze stacit pouze cesne prohlaseni dodavatele (potvrzeni odberatelu ze s dodavateleme maji dobrou zkusenost muze byt narocne)
+            - popis technickeho vybaveni a techniku (ze na to mame lidi a techniku)
+    - hodnotici kriteria
+        - ekonomicka vyhodnost nabidky (nejnizsi nabidkova cena nebo celkove zivotni naklady = TOC)
+        - dalsi dilci kriteria s relevantni vahou
+        - postup vypoctu je UVEDEN V POPTAVCE vcetne hodnoticich kriterii
+    - doruceni nabidky, otvirani obalek
+        - zalepena obalka s napisem "VEŘEJNÁ ZAKÁZKA, NEOTVÍRAT"
+        - otevreni pred komisi
+            - verejne => moznost ucasti dodavatelu
+            - zapis o podanich nabidkach a cenach

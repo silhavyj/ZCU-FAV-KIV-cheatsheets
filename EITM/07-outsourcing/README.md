@@ -1,0 +1,51 @@
+- = vycleneni nejake cinnosti z firmy a jeji zajisteni externim dodavatelem
+- outsourcing znamena uzkou provazanost firmy a outsourcera, dochazi k vzajemne zavislosti (jedna se o vztah, ne poskytovani sluzeb)
+- outsourcuji se
+    - podpurne cinnosti (uklid, vratna, ucetni)
+    - nekdy dokonce i cely business  process (BPO = business process outsourcing) - napriklad podpora uzivatelu (Indie)
+- typy:
+    - offhore - indove atd
+    - on-site: clovek prijde do firmy (uklizecka)
+        - problem s casovymi pasmy, jazykove bariery
+- priklady outsourcingu v SW
+    - vyvoj, migracni a integracni sluzby, support (helpdesk), udrzba
+- duvody pro outsourcing vyvoje SW lze kategorizovat na
+    - chci - strategicke rozhodnuti (napr expandace do zahranici)
+    - musim - chybi mi zdroje, lidi s know-how
+    - zkousim - podpurne cinnosti
+
+- prinosy
+    - nekdy snizeni nakladu (predpoklad: outsourcovane firmy pracuji efektivne a smlouva je vyhodna)
+    - lepsi podminky pro soustredeni na hlavni/kriticke cinnosti
+    - vetsi flexibilita - nabor a propousteni zamestnancu je nakladne, i casove
+    - snizeni mzdovych nakladu (zvysuji zisk na zamestnance - ekonomicky ukazatel)
+
+- rizika
+    - zavislost na poskytovateli
+    - moznost uniku citlivych informaci
+    - uzka provazanost, vendor lock-in - spatna vratnost strategickeho rozhodnuti
+    - nutnost ridit obchodni vztahy s poskytovatelem
+ 
+- insourcing 
+    - znovynabyti schopnosti interne
+    - zajistit nejakou cinnost  - - - reverzni proces k outsourcingu
+
+- platebni model
+    - za lidske zdroje
+    - za vykony - cena za kus (1 faktura)
+    - pausal
+    - plus penale - za nedodrzeni SLA = Service-level agreement, kvality atpd.
+
+- SLA (Service Level Agreement)
+    - = smlouva sjednana mezi poskytovatelem sluzby a jejim uzivatelem
+    - definuje parametry sluzby
+    - zakladni dokument pro obe strany, casto rozhoduje o uspesnosti outsourcingu
+    - obsah
+        - definice cinnosti
+        - definice casoveho ramce (pracovni doba), doby reakce (response time), vyreseni (resolve time)
+        - zpusob komunikace, zadavani pozadavku (helpdesk, IS, telefon, main)
+        - definice priorit a severit
+        - zpusob zpoplatneni a vyuctovani, penale
+        - definice kvality
+        - pravidelny reporting (napr mesicni) + jeho struktura
+        - QA (quality assurance) procesy, eskalace

@@ -1,0 +1,32 @@
+				Spos 2012/2013
+
+Jmeno:
+Datum:
+Celkem:
+Zapocet:
+
+
+
+( 1 bod )
+Nastavte v linuxu raid10( pripadne degradovany - v oduvodnenem pripade ) ze vsech dostupnych disku, mimo tech, ktere vyuziva system.
+
+( 1 bod )
+Naformátujte tento nově vytvořený raid jako EXT4 a připojte jej do /mnt. Nastavte systém tak, aby tato složka byla připojena i po startu systému.
+
+( 2 body )
+Nastavte v linuxu sdílení složky /mnt pod názvem spos tak, aby jí bylo možné připojit z windows i linuxu
+
+( 1 bod )
+Zabezpecte pristup k tomu sdileni tak, aby byl dostupny pouze z localhostu a z verejne IP vaseho windows virtualu.
+
+( 1 bod )
+Připojte ve windows danou složku jako další disk K: z prikazove radky ( predvedene pripojeni a nasledne odpojeni )
+
+( 2 body )
+Spusťte a nastavte IIS na portu 9091.
+
+( 1 bod )
+Napiste jednoduchy script ktery bude pravidelne - kazdou minutu stahovat obsah tohoto webu - na Linuxu.
+
+( 1 bod )
+Vytvorte v libovolnem jazyce program  /mnt/dns, ktery do souboru /mnt/dns.txt ulozi( vzdy cerstve overeny ) seznam serveru, na ktere se dorucuje posta pro domenu google.com. Soubor nebude obsahovat nic nez jednotlive radku obsahujici postovni servery.

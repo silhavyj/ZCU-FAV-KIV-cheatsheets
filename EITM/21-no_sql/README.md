@@ -1,0 +1,36 @@
+- nerelacni datovy model
+- podporuji distribuovanou architekturu
+- zamereny na vysoky vykon a horizontalni skalovatelnost
+- typy
+    - klic-hodnota
+        - dvojice klic-hodnota
+        - pristup podkle klice pres hash (rychle)
+        - napr: redis
+    - dokumentove
+        - jako klic-hodnota, ale hodnota je strukturovana
+        - hodnota = JSON, XML, ...
+        - napr: MongoDB
+    - grafove
+        - Grag = uzly + vlastnosti a hrany mezi nimi
+        - moznost pouziti grafovych algoritmu
+        - napr.: Neo4J
+- neresi transakcni zpracovani (ACID) ale data jsou dostupna vzdy, i kdyz obcas pouze v castecne konzistentnim stavu
+
+- ACID a BASE
+    - ACID
+        - transakcni databaze
+        - Atomicity - atomicnost operaci (povede se cela nebo vubec)
+        - Consistency - v DB jsou pouze konzistentni platna data (neni porusena integrita)
+        - Isolation - transakce se navzajem neovlivnuji
+        - Durability - jakmile je transakce dokoncena, tak ji nevymaze ani napriklad nasledny vypadek proudu
+    - BASE
+        - ridi se jim distribuovane systemy
+        - CAP teorem vyreseni omezenim konzistence dat
+            - nema silnou konzistenci -> pri cteni neni zajisteno ze se ctou aktualizovana (nejnovejsi) data
+            - consistency
+            - availability
+            - partition tolerance
+            - zle zajistit pouze 2 ze 3 vlastnosti
+        - Basically avaiable - pracuje vice mene porad
+        - Soft state - nemusi byt stale konzistentni
+        - Eventually constisten - v blizke dobe ale do konzistentniho stavu dojde
