@@ -246,3 +246,159 @@
   - tzv. iteracni techniky nasobeni
 
   <img src="../img/03/26.png">
+
+  - vytvareni parcialnich soucinu v soustave o zakladu `2^m`
+    pouziti dilcich nasobicek (tvori soucin cifer)
+
+    <img src="../img/03/27.png">
+
+  - redukce parcialnich soucinu pomoci dilcich nasobicek
+
+    <img src="../img/03/28.png">
+
+  - redukce vysky matice zobecnenymi scitackami
+
+    <img src="../img/03/29.png">
+
+  - redukce parcialnich souctu paralelnimi citaci (5,5,4)
+    - "nejhorsi" pripad - kazda tecka je hodota `1` => `3 + 3 + 3 + 3 + 3 = 15` => potrebujeme 4 bity na representaci
+
+    <img src="../img/03/30.png">
+
+    - vysledny soucin je ziskan po secteni poslednich dvou radku scitackou (CLA, RCA, ...)
+  - pocet redukcnich urovni?
+    - jedna vrstva paralelnich scitacu redukuje souvisly pas o vysce `r` na vysku `s`
+    - pri analyze se postupuje opacne -> chceme najit tzv. redukcni posloupnos = vyjadruje vystky jednotlivych redukcnich sloupcu
+
+    <img src="../img/03/31.png">
+
+- implementace paralelnich scitacu
+  - obecne paralelni scitace
+    - scitaji vazene jednicky v k-bitovych sloupcich
+    - `(3,2), (7,3), (15,4), (5,5,4), ...`
+  - specializovane paralelni scitace
+    - scitaji vazene jednicky v k-bitovych sloupcich + j internich vstupnich prenosu
+    - generuji vystupni pole a j internich vystupnich prenosu
+    - `(4,2), (7,2), (11,2), ...`
+
+- citac (4,2)
+  - postaveny ze dvou citacu (3,2), ale s jednim internim vstupnim "prenosem" a jednim internim vystupnim "prenosem"
+
+  <img src="../img/03/32.png">
+
+- redukce nasobicky 8x8
+  
+  <img src="../img/03/33.png">
+
+- Scitacka typu CSA
+  - obecne typ scitacky nepropagujici carry vlevo ale postupuje ke zpracovani dalsi vrstve
+
+  - ```
+     1011
+    +1001
+    -----
+     2012
+    ```
+
+  - full adder ktery poskytuje prenos dalsi vrsve misto toho aby preno prochazel napric celou paralelni scitackou
+  - lze oznacit jako paralelni scitac (3,2)
+  - CSA (Carry Save Adder)
+
+  <img src="../img/03/34.png">
+
+  - CSA pro redukci matice parcialnich soucinu
+    - 6 bitova CSA scitacka redukuje tri 6-bitova vstupni slova na jeden 6-bitovy a jeden 6-bitovy (posunuty vystup)
+
+    <img src="../img/03/35.png">
+
+- nasobicka Wallace
+
+  - kombinace HA (2,2) a FA (3,2)
+  - rychle paralelni scitani parcialnich soucinu
+  - <https://www.youtube.com/watch?v=75JidRFYAQ0>
+
+  <img src="../img/03/36.png">
+
+- iteracni aritmeticka pole
+  - predstavuji pole bunek stejneho typu (nebo nekolika malo typu)
+  - nejcastejsi organizace 2D ktere maji pravidelnou propojovaci strukturu
+    - urcena pro vykonavani aritmetickych operaci
+  - funkce bunek nemusi byt konstantni (implementace mnoziny operaci jednom polem)
+
+- zakladni typ nasobicky (naivni)
+  - nejdelsi cesta = zpozdeni
+  - defakto kopiruje strukturu parcialnich soucinu
+
+    <img src="../img/03/37.png">
+
+- upravy zakladniho typu pole pro nasobeni
+  - cile uprav:
+    - zkraceni kriticke cesty signalu v polu
+    - rozsireni o nasobeni zapornych ciel
+    - generace parcialnich soucinu uvnitr bunek
+    - zavedeni pipelingu
+    - zlepseni topologie polo pro snazsi implementaci
+
+- nasobicka s upravou (vylepsena)
+  
+  <img src="../img/03/38.png">
+
+- pole pro nasobeni se znamenkem
+  - expanze znemenka kazdeho parcialniho soucinu (a provedeni zaverecne korekce) na sirku vysledneho soucinu
+
+  <img src="../img/03/39.png">
+
+- Nasobicka Baugh-Wooley
+
+  - vzdycky kdyz se pouzije znamenkovy bit tak se vysledek zneguje
+  - pro `a3 b3` je to negace negace vysledku, takze bez negace
+  
+  <img src="../img/03/40.png">
+
+  <img src="../img/03/41.png">
+
+  <img src="../img/03/42.png">
+
+- priklad pole pro nasobeni
+  
+  <img src="../img/03/43.png">
+
+  - zpozdeni (delka kriticke cesty)
+  - ve ctvercovem formatu pole
+
+    <img src="../img/03/44.png">
+
+- pipelining
+  - rozdeleni provadejici jednotky do stupnu s priblizne stejnou operacni dobou
+  - oddeleni stupnu pomoci registru (latch), aby bylo moznost cinnost separovat
+  - hodinovy kmitocet je urcen nejpomalejsim stupnem
+    - velmi rychle hodiny
+  - delsi doba latence
+    - doba ktera uplyne od vlozeni vstupnich operandu do vystupnu vysledku prochazejiciho od techze operandu
+  - lze dosahnout velke sirky pasma, pokud se provadi velike mnozstvi nezavislych nasobeni
+    - kazdy takt hodin generuje jeden vysledek
+
+  <img src="../img/03/45.png">
+
+- existuji i dalsi pole napr pole pro nasobeni s prekodovanim (booth) nebo pole pro nasobeni CSA (vysledek bez carry + prenos)
+- struktura jedna bunky nasobicky
+
+  <img src="../img/03/46.png">
+
+- pole pro nasobeni CSA
+  - kazda bunka Mxy je jedna CSA scitacka
+
+  <img src="../img/03/47.png">
+
+  - nasobeni se znamenkem
+
+    <img src="../img/03/48.png">
+
+- taktez muze fungovat v pipeline rezimu (latch registry)
+- zaver pole nasobeni
+  - nepatri mezi nejrychlejsi implementace
+  - regularni strukturu
+  - pouzivaji pouze kratke vodice (k bezprostrednim sousedum)
+  - jednoduchy a efektivni navrh v technologii VLSI
+  - jednoduche zavedeni pipelingu => zvyseni vykonu
+  - pole lze vyuzit pro vicero matematickych funkci
