@@ -164,6 +164,28 @@
   8) Autoincrement `add r0, (r1)+` (`r0 += m[r1]`; `r1++`)
   9) Autodecrement `add r0, (r1)-` (`r0 += mem[r1]`; `r1--`)
   10) Scaled `add r0, 100(r1)[r2]` (`r0 += mem[100 + r1 + r2 * sizeof(word)]`)
+  - vsechno to je jedna instrukc typu `add` => adresni rezimi nam udelaji mnoho dalsich variaci te same instrukce!
+  - navis jeste dalsi vyjimky pokud adresujeme pres program counter
+
+    <img src="../img/06/09.png">
+
+    <img src="../img/06/10.png">
+
+    <img src="../img/06/11.png">
+
+    <img src="../img/06/12.png">
+
+    <img src="../img/06/13.png">
+
+    <img src="../img/06/14.png">
+
+  - dulezite adresni rezimy (statisticke vyuziti instrukci)
+    - displacement (offset) ma jedno z nejvetsich zastoupeni
+    - Immediate
+    - Register Indirect
+  
+  - komplexni adresni rezimy a velky pocet formatu vyzaduji slozite rizeni
+  - obtizne resitelne v systemech s hlubokym pipelinningem
 
 - typy operaci
   - aritmeticko logicke (add, sub, div, ...)
@@ -195,3 +217,216 @@
   - jak zakodovat cilovou adresu kdyz je to 32-bitova (coz je delka samotne instrukce)
   - studie ukazuji ze drtiva vetsina skoku se odehrava v kratke vzdalenosti od aktualniho `PC` => relativni adresovani +- od adresy aktualne provadene instrukce
     - pozn: x86 long jump
+
+- dekodovani instrukci (VAX)
+  - `opcode` specifikuje pocet oprandu a datove typy
+  - pote co byl `opcode` urcen je kazdy operad reprezentovan polozkou `operand specifier` ktery urcuje adresni rezim operandu a prvniho parametru
+  - VAX ma promennou delku instrukci (CISC)
+
+- adresovani a ochrana x86
+
+  <img src="../img/06/15.png">
+
+- Paralelni systemy
+  - operace jsou provadeny paralelne ("vedle sebe")
+  - nektere pojmy
+    - grid computing - distribuovane vypocty na mnoha (ruznych) pocitacich
+    - cluster server system - sit obecnych pocitacu za ucely paralelnich vypoctu
+    - massively paralell processor ssytem - archhitektura superpocitacu
+    - symetric multiprocessing system - sit propojenych identickych CPU (`2^n`)
+    - multi-core processor - procesorovy cip obsahujici vice (ruznych) jader
+      - CPU, AI korpocesor, ...
+
+  - flynova taxonometrie
+    - SISD = single instruction, single data stream (jednoprocesorovy system)
+    - SIMD = single instruction, multiple data stream (jedna instrukce spustena nad vicero daty - typicky GPU)
+    - MISD = multiple instruction, single data (fault tolerant systemy)
+    - MIMD = multiple instruction, multiple data (vice vypocetnich jednotek zpracovava vice datovych proudu => patri sem vetsina paralelnich systemu)
+
+- pamet paralelnich systemu
+  - distribuovana (kazdy CPU ma vlastni pametovy prostor)
+  - sdilena (shared; kazdy CPU adresuje tentyz prostor -> jedoducha komunikace mezi procesy prostrednictvim sdilene pameti; bottleneck?)
+  - SMP (= symetricky multiprocesorovy system) se sdilenou pameti
+    - s narustajicim poctu CPU se z pameti stava uzke misto
+
+  - NUMA (nehomogeni pristup do pameti)
+    - je prioritizovano pouziti blizsi (lokalni) pameti cimz se eliminuje uzke misto
+    - k omezeni pristupu do pameti se implementuje cache a specialni HW zarucujici jeji koherenci
+
+  <img src="../img/06/16.png">
+
+  - viceprocesorovych vypocetnich systemu pak vede na kombinaci kdy SMP je multi-core procesor s pameti a NUMA pak propojeni jednotlivych procesoru
+
+  <img src="../img/06/17.png">
+
+- adresni prostor
+  - logicky
+    - adresni prostor se kterym muze pracovat dany CPU
+    - 16-bitova CPU bus => 2^16 (64kB) je velikost adresniho prostoru
+    - pro 32-bitu => 2^32 (4GB)
+  - fyzicky
+    - skutecny adresni prostor (kde je co namapovane)
+    - primy pristup do pameti nebo IO zarizeni (periferie)
+
+  <img src="../img/06/18.png">
+
+- segmentace
+  - segment = virtualni adresni prostor ruzne velikost
+  - rozdeleni na segmenty respektuje log. strukturu programu/dat/OS
+    - typicky segment kodovy
+    - segment statickych dat
+    - segment zasobniku
+    - systemovy segment atd
+  - kazdy segment muze mit ruzna pristupova prava (RWX)
+  - vyhody
+    - ochrana pristupu procesu (prava)
+    - velikost segmentu je uzpusobena dane potrebe
+    - zmena umisteni segmentu lze provest jen zmenou sementu (offset je zachovan)
+  - nevyhody
+    - obecne problemy s alokaci segmentu pri zmenach velikosti a mozna fragmentace
+    - rezije pri pristupu do pameti (prevod adres)
+  - algoritmy pridelovani volneho bloku
+    - first fit, last fit, best fit, ...
+
+- strankovani
+  - adresni prostor je rozdelen na ramce o stejne velikost (1 ramec odpovida jedne strance)
+  - prevod delan pres tabulku stranek
+  - preklad delan HW pomoci MMU (rychlost)
+
+  <img src="../img/06/19.png">
+  
+  - vyhody
+    - omezeni fragmentace pameti
+    - moznost pristupovych prav
+    - moznost swapovani (lze pouzit i pro segmentaci)
+  - nevyhody
+    - nedokonale vyuziti pameti (velikosti stranek: 4kB, 1M, atd => ovlivnuje rychlost prekladu)
+    - rezije prekladu adres (zanorene strankovani)
+  - algoritmy vyberu stranek: LRU, Round Robin, atd, ... (vyuziti bitu zapisu a pristupu na x86)
+
+- segmentace + strankovani
+  - kombinace vyse uvedenych metod
+  - ponechava vyhody segmentace a diky strankovani resi problem s fragmentaci a umoznuje mit v pameti jen pouzivane casti
+  - ale navic rezije prekladu?
+
+  <img src="../img/06/20.png">
+
+- RAM
+  - SRAM
+    - S (= staticka)
+    - pro uchovani bitu je pouzit klopny obvod => prostorove narocne => vyssi cena
+    - cteni je nedestruktivni (narozdil od DRAM)
+  - DRAM
+    - pro uchovani jednoho bitu je pouzit kondenzator velmi nizke kapacity
+    - ctenim se kondenzator vybije
+    - kvuli samotmenu vybijeni je nutno informaci v pameti pravidelne obnovodat => D (= dynamicke)
+      - => muze dojit k poskozeni ulozeneho bitu => nutnost ECC
+    - cteni z DRAM je relativne pomale
+    - pouziva se v dnesnich stolnich PC a noteboocich
+    - levnejsi
+  - SDRAM = synchronni DRAM (vsechny signaly jsou synchronizovane s hodinami)
+  - DDR = SDRAM se synchronizaci na obe hrany hodin (double data rate)
+
+- sbernice
+  - datova
+    - sirka dat: 8, 16, 32 bitu, ...
+  - adresni
+    - velikost pameti (16 bitu => 655536 adres)
+  - ridici
+    - cinnost pameti (typicky se muze lisit)
+    - CS (chipselect), /CS (negace chipselectu)
+    - OE (output enable - povoleni vystupu na datovou sbernici)
+    - WE (write enable - rizeni zapisu do pameti)
+
+- dekodovani adres
+  - fyzicky prostor je typicky mensi nez logicky
+  - napr fyzicka pamet 8 bitu => `0x00 - 0xFF`
+  - CPU ma 10 bitovou adresni sbernici `A0-A9` = 1kB
+  - moznosti zapojeni:
+
+    <img src="../img/06/21.png">
+
+- cache
+  - hirearchie pametoveho systemu
+    - idealni pamet: co nejrychlejsi, nejlevnejsi, nejvetsi, drzi informace i po vypnuti
+    - nelze docilit spleni vsech podminek => pametovy system se sklada z ruznych druhu pameti
+
+    <img src="../img/06/22.png">
+
+  - pri pristupu do pameti se casto projevuje
+    - casova lokalita
+      - data ktera byla prave ulozena budou pravdepodobne brzo zas pouzita (algoritmy, cykly, promenne, ...)
+    - prostorova lokalita
+      - bylali pouzit nejaka polozka bude nejspis pouiza i polozka v jeji okolni lokaci (pole, lasledujici instrukce, zasobnik, ...)
+    - puvodne byly pameti rychlejsi nez rychlost CPU (-> dnes je tomu naopak)
+
+- cache pameti (vyrovnavaci pameti)
+  - pokud neco zapiseme do cache musime to take nekdy propsat do hlavni pameti
+    - primy zapis
+      - hned po zmene v cache okazmcite zmenu propagujeme dale az do hlavni pameti
+      - pomale
+    - zapis s mezipameti
+      - specialni mezipamet pro zapis omezene velikosti
+    - zpetny zapis
+      - zapisuju v okamziku kdy menim data v cache
+    - zpetny zapis zmeneneho
+      - zapisuju v okamziku kdy prepisuju data v cache ktera jsou jiz zapsana do hlavni pameti => pouziti dirty flagu
+  - velikost bloku cache
+    - pokud maly => moho bloku (kazdy se svoji logikou)
+    - pokud velky => castejsi vymena (vetsi ppst vypadku)
+    - casto rozdelena do bloku o urcite velikosti ktere nazteme z/do DRAM jednim ctenim/zapisem
+  - hit rate
+    - ppst uspechu ze dane dato je v cache, prakticky 95%-99% (teoreticky << 1% = nahodny pristup)
+    - v pripade miss je treba hledat dale v hirearchii
+    - => zpusob zapisu programu/algoritmu muze ovlivnit rychlost jeho vykonavani (napr 2D - pristup po radkach)
+  - pro zamezeni konfliktu se oddeluje datova a instrukcni cache
+
+- informace ulozene v cache
+  - vlastni data odpovidajici velikosti jednoho bloku
+  - adresa ke ktere data nalezi
+  - dirty bit (priznak zmeny)
+  - informace o pouziti polozky
+- pokud potrebuji do cache nahrat novou polozku musim nejakou odstranit (replacement):
+  - RR (nahodny vyber/replacement)
+  - FIFO (nejdrive vlozenou)
+  - LFU (least frequently used)
+  - MFU (most frequently used)
+  - LDU (last recently used = nejdele nepouzivana)
+- jsou-li za sebou dve cache (L1, L2) => je vyhodne aby pouzivali odlsne algoritmy
+
+- plne asociativni cache
+  - idealni asociativni pamet, kazda polozka ma vlastni porovnavaci mechanismus => narocne
+  - napr adresa 32 bitu, 1024 polozek v cache, data velikost 4B
+    - kazdy radek cache obsahuje:
+      - 30 bitu adresa (32-2, 2b = velikost dat)
+      - 32 bitu data
+      - 1b priznak platnosti
+      - 1b dirty bit
+      - +dasi bity pro nahrazovaci algoritmus
+    - porovnavaci funkce je 32 bitova a je 1024x (lookup polozky)
+
+- cache s primym mapovanim
+  - spodni cast adresy je primo indexem do cache => v cache nemohou byt dve adresy ktere maji tento index stejny
+  - napr adresa 32 bitu, 1024 polozek v cache, data velikosti 4B
+    - kazdy radek cache obsahuje:
+      - 20 bitu adresa (32b - 2b - 10b); 2b = velikost dat, 10b=velikost indexu
+      - 1b priznak platnosti
+      - 1b dirty bit
+      - +dalsi bity pro nahrazovaci algoritmus
+  - porovnavaci funkce je 20b a  je pouze 1x
+
+  <img src="../img/06/23.png">
+
+- N-cestna cache
+  - spodni cast adresy je indexem do cache, ale cache je vicestna => obsahuje N bloku s danym indexem
+
+- napr adresa 32 bitu, 4 cestna cache o celkem 1024 polozkach (celkem), data velikosti 4B
+  - kazdy radek cache obsahuje:
+    - 22 bitu adresa (32b - 2b - 8b), 2b = velikost dat, 8b = velikost indexu; 10b-2b za ctyrcestnost
+    - 32 bitu data
+    - 1b priznak platnosti
+    - 1b dirty bit
+    - +dalsi bity pro nahrazovaci algoritmus
+  - porovnavaci fce je 22 bitova a je zde 4x protoze cache je ctyrcestna
+
+  <img src="../img/06/24.png">
