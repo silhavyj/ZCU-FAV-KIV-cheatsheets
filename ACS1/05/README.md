@@ -86,6 +86,13 @@
       - kazdy paritni bit se pocita z nekterych bitu informacniho slova
       - pozice bitu urcuje jake bity jsou jsou v informacnim slove zjistovany a jake preskakovany
         - pro pozici `p3` (pozice 4) jsou prvni 3 bity preskoceny, 4 se zkontroluji, 4 preskoci, 4 zkontroluji, atd.
+
+      <img src="../img/05/07.png">
+
+      <img src="../img/05/08.png">
+
+      - kdyz kontrolni bit nevyjde oznacime si dany paritni bit jako `1`, pokud ok tak `0` -> binarni cislo udava pozici bitu ktery je spatne (`101` -> bit d5 je spatne (6. pozice pokud pocitame od 0))
+
     - napr pro DRAM 64 bit se pouziva 8b zabezpeeni
     - pro flash block 2048 (512B) se pouzivaji EEC 24b (2b detekce, 1b korekce)
 
