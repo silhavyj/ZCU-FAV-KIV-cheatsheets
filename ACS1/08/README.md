@@ -178,3 +178,209 @@
     - izochronni prenost (real time data, dodrzovani casovani)
   - VID/PID (vendor, product ID)
     - identifikace zarizeni -> identifikace ovladace
+
+- sbernice
+  - = spojovaci podsystem - "stmeluje" komponenty pocitacoveho systemu
+    - zajistuje rizeni a presos dat mezi nimi
+  - vysokorychlostni HW interface + logicke protokoly
+  - site, kanaly, sbernice (backplane)
+
+- sbernice (backplane)
+  - = "prava" systemova sbernice typu backplane obsahuje radu konektoru
+  - systemove moduly se zasouvaji do konektoru
+  - je definovan logicky protokol aby se zabranilo vzniku elktronickych konfliktu (zkratu)
+  - ISA ve sbernicove terminologii = Industry Standard Architecture
+
+  <img src="../img/08/12.png">
+
+- starsi implementace PC
+
+  <img src="../img/08/13.png">
+
+- noverjsi implementace PC
+
+  <img src="../img/08/14.png">
+
+- pocitacovy system s jednou sbernici: backplane bus
+  - jednoducha sbernice se pouziva pro:
+    - komunikace CPU s pameti
+    - komunikace mezi I/O zarizenimi a pameti
+  - vyhody: jednoduchost a nizka cena
+  - nevyhody: pomale, sbernice se muze stat uzkym mistem systemu
+
+  <img src="../img/08/15.png">
+
+- dvousbernicovy system
+  - I/O sbernice je pripojena k procesoru popripadne k pametove sbernici pomoci sbernicovych adaptoru
+    - Pametova sbernice: CPU urcena hlavne pro komunikace CPU <-> mem
+    - I/O sbernice: obsahuje konektory pro I/O zarizeni
+
+  <img src="../img/08/16.png">
+
+- system se tremi sbernicemi
+  - maly pocet backplane sbernice napojenych na sbernici CPU-mem
+    - pro prenos dat mezi CPU a pameti se vyuziva vyhradne pametova sbernice
+    - I/O sbernice se pripojuji k backplane sbernici
+  - vyhoda: minimalizuje se zatez procesorove sbernice
+
+  <img src="../img/08/17.png">
+
+- North/South bridge architektury
+  - oddelene souboty pinu pro ruzne funkce
+    - pametova sbernice
+    - cache pameti
+    - sbernice pro pripojeni graficke karty (rychly frame buffer)
+    - I/O sbernice jsou pripojeny v backplane sbernici
+    - vyhody:
+      - sbernice lze provozovat pri ruznych rychlostech
+      - mnohem mensi celkove zatizeni!
+
+  <img src="../img/08/18.png">
+
+- co definuje sbernici
+  - protokol transakci
+  - casovani a specifikace signalu
+  - svazek vodicu
+  - elektricka specifikace
+  - fyzicke/mechanicke charakteristiky (konektory)
+
+- synchronni & asynchronni sbernice
+  - synchronni sbernice
+    - mezi ridicimi linkami zahrnuje i hodiny
+    - fixni komunikacni protokol definovany relativne k hodinam
+    - vyhoda: male mnozstvi logiky a vysoka rychlost
+    - nevyhody
+      - kazde zarizeni pracujici na sbernici musi pdporovat stejnou rychlost hodinoveho signalu
+      - aby se potlacil vliv casoveho skew, sbernice nesmi byt prilis dlouho, mal-li byt zachovana rychlost
+
+- asynchronni sbernice
+  - synchronizaci dat neurcuji hodiny
+  - muze obsluhovat sirokou skalu zarizeni
+  - delka se muze zvetsovat bez ohledu na skew hodinoveho signalu
+  - vyzaduje protokol zahrnujici handshaking
+    - priklad 4 fazoveho handshaku
+
+      <img src="../img/08/22.png">
+
+- master & slave
+
+  <img src="../img/08/19.png">
+
+  - bus master: ma schopnost ridit sbernici, zahajuje transakci
+  - bus slave: modul aktivovany zarizenim typu master pri transakci
+  - komunikacni protokol sbernice: specifikace posloupnosti udalosti a casovych pozadavku pri prenosu informace
+  - asynchronni prenosy: ridici linky (req, ack) zajistuji synchronizaci udalosti
+  - synchronni prenosy: posloupnost udalosti odvozovana od spolecnych hodin
+
+- arbitrace (= ziskani pristupu ke sbernici)
+  - chaosu muze byt zabraneno navrhem typu master-slave: master ridi sbernici, slave odpovida na pozadavky zapisu nebo cteni
+  - hlavni nevyhoda: CPU (master) je zapojen do kazde transakce
+  - arbitracni schema "Daisy Chain"
+
+    <img src="../img/08/21.png">
+
+- pripojeni I/O k CPU
+  - zarizeni je nastaveno pro operaci, ktera se ma provadet
+    - cteni nebo zapis
+    - velikost prenasenych dat
+    - Poloha zarizeni (v systemu)
+    - adresa v pameti
+  - inicializace zarizeni signalem aby zahajilo operaci
+  - po dokonceni operace zarizeni aktivuje interrupt
+
+   <img src="../img/08/23.png">
+
+  - I/O mapovany do pametoveho prostoru
+    - nektere fyzicke adresy (oblast) jsou vyhrazeny
+    - neodpovida jim zadna realna pamet
+    - procesor ktery ma do teto oblasti pristup vi ze uvedena oblast slouzi k ukldadani instrukci pro IO prostor
+    - cteni dat ze zarizeni
+      - polling (pokud vime ze budeme cekat krace); pri delsim cekani je neefektivni
+      - interrupt of zarizeni (asynchronni); napr od casovace
+    - vyhoda: uzivatelsky program je pozastaven pouze v dobe aktualniho prenosu dat
+    - nevyhoda: je vyzadovan specialni H W pro I/O interrupty; ukladani kontextu
+
+- delegovani I/O ridici funkce z CPU do DMA
+  - primy pristup do pameti (= DMA)
+  - pracuje jako master na sbernici
+  - prenasi bloky dat z/do pameti bez prime ucasti CPU
+  - notifikace o konci prenosu -> interrupt
+
+- PCI Local Bus
+  - = Peripheral Component Interconnect (PCI)
+  - definice sbernice musi pokryvat celou radu pozadavku:
+    - casovani
+    - mechanicke parametry
+    - elektricke parametry
+    - protokol sbernice
+
+- koncepce PCI
+  - velka sirka pasma
+    - graficke karty
+    - pevne disky
+  - rychle CPU
+    - ale i obsluha pomalejsich IO
+  - sbernice s vazbou na CPU a pametovou sbernici
+
+- zakladni architektura PCI sbernice
+
+  <img src="../img/08/24.png">
+
+  - dualni nezavisla sbernice
+    - backside bus
+    - frontside bus
+    - PCI
+      - primy pristup k systemove pameti pro pripojena zarizeni
+      - pouziva "bridge" k pripojeni k "frontside" sbernice -> a tim k CPU
+
+    <img src="../img/08/25.png">
+
+- ruzne urovne sbernic
+
+  <img src="../img/08/26.png">
+
+- North/South bridge
+
+  - North bridge pripojuje CPU k RAM, vestavene grafice, PCIe
+  - South bridge pripojuje CPU k diskum, USB sbernici, PCI sbernici, sitove karte, (obecne "externim" periferiim)
+
+  <img src="../img/08/27.png">
+
+- PCI revize 2.1
+  - vlastnosti:
+    - PCI je sbernice typu multimaster bus
+    - vsechny transakce inicializuje master
+    - vsechny transakce smeruji od/k cilovemu zarizeni
+    - nezavislost na CPU
+    - nizka spotreba
+    - rychlost sbernice az 66 MHz
+    - sirka sbernice 64 bitu
+    - paralelne probihajici prenosy na sbernici
+    - arbitrace sbernice na pozadi
+    - autokonfigurace
+    - plna podpora PCI masteru pres bridge
+    - paritny kontrola adresy, dat, commandu
+    - tri adresni prostory
+    - transparentnost z hlediska SW
+
+- uvod do operaci sbernice PCI
+  - klicove pojmy:
+    - initiator (obdoba mastera)
+      - vlastni sbernici a zahajuje prenost car
+      - kazdy initiator musi mit zaroven target
+    - target (obdoba slave)
+      - cil prenosu dat cteni/zapis
+    - agent
+      - libovolny initiator/target na PCI sbernici
+    - funkce
+      - trochu divny vyzanem, znamena spise port popr. kanal
+  - vsechny akce jsou synchronni vzhledem k PCI hodinam
+    - rozsah hodin 0 MHz az 33.33 MHz => vsechna zarizeni na PCI sbernici ho musi podporovat
+    - aktualni frekvence se muze dynamicky menit
+
+- prenosy na sbernici
+  - burst rezim - sklada se z jedine adresni faze a dvou nebo vice datovych dazi
+  - bus master prochazi procesem prideleni pouze jednou
+  - behem adresni faze se predava startovaci adresa a typ transakce
+  - vsechna zarizeni na sbernici si zaznamenaji adresu a typ transakce
+    - cilove zarizeni pak nakopiruje adresu do adresniho citace a samo provaci pak jeho inkrementaci
