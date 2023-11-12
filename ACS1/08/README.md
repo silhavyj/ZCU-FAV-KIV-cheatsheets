@@ -342,7 +342,9 @@
 - North/South bridge
 
   - North bridge pripojuje CPU k RAM, vestavene grafice, PCIe
+    - obecne zarizeni s vysokymi naroky na rychlost
   - South bridge pripojuje CPU k diskum, USB sbernici, PCI sbernici, sitove karte, (obecne "externim" periferiim)
+    - obecne mene vykonna zarizeni
 
   <img src="../img/08/27.png">
 
@@ -504,6 +506,7 @@
   <img src="../img/08/30.png">
 
   - CPU vystavy adresy a data a PCI bridge jej "prekonvertuje" a prenese jako burst mode?
+  - hirearchicka struktura vytvorena pomoci mostu (bridge)
 
 - priklad zakladni operace zapisu
   - ctyri dvojslova jsou zapsana iniciatorem do ciloveho zarizeni (target)
@@ -571,3 +574,149 @@
   - target diconnect with data - nemohu dalsi sousto...OK, jen jedno ale
   - target disconnect without data - nemohu dalsi sousto...doopravy!
   - target abort - vazne varovani
+
+- adresni prostory PCI
+  - PCI target muze zahrnovat az tri ruzne adresni prostory
+    - konfiguracni prostor
+      - ukladani zakladnich informaci o zarizeni
+      - dovoluje centralnimu zarizeni programovat a nastavovat zarizeni
+    - I/O prostor
+      - pouzivany hlavne jen pro PC periferie
+    - pametovy prostor
+      - pouzivany pro vse ostatni
+
+- pristupy do adresnich prostoru
+  
+  <img src="../img/08/37.png">
+
+  - konfiguracni prostor
+    - obsahuje zakladni info o zarizeni napr vyrobnce
+    - dovoluje "Plug-N-Play"
+      - bazove adresni registry umoznuji dynamicke mapovani agenta do pametoveho nebo I/O prostoru
+      - programovatele prerusovaci linky umoznuji SW driveru naprogramovat PC desku s IRQ az po startu (bez jumperu)
+
+  - IO prostor
+    - do tohoto prostoru se mapuji zakladni periferni zarizeni PC (klavesnice, seriove porty, atd)
+    - Specifikace PCI priousti aby agent obsadil IO prostor ve velikosti od 4B do 2GB
+      - pro systemy x86 je maximum 256 bytu v souvislosti se sbernici ISA
+
+  - pametovy prostor
+    - tento prostor je pouzivny pro vse ostatni (obecne pouziti)
+    - agent muze vyzadovat pametovy prostor v rozsahu od 16B do 2GB
+
+- povely PCI
+  - PCI rozeznava 16 ruznych 4-bitovych povelu
+    - konfiguracni povely
+    - pametove povely
+    - IO povely
+    - specialni povely
+  - povel je generovan iniciatorem behem adresni faze na linkach C/BE#
+
+  <img src="../img/08/38.png">
+
+- konfigurace PCI
+  - inicializace systemu
+    - konfigurace dovoluje SW inicializaci systemu (BIOS)
+    - kazde zarizeni ma konfiguracni registry
+      - zapisem se zarizeni nastavi
+    - po pripojeni napajeni SW prochazi sbernici (scanovani)
+    - SW analyzuje pozadavky systemu
+
+- konfiguracni transakce
+  - specialni prikazy sbernice pro cteni/zapis konfigurace
+  - typicky jednoducha faze
+  - typ 0
+    - lokalni PCI sbernice (konfiguruje agenty na stejnem segmentu)
+  - typ 1
+    - konfiguruje agenty sbernice pres PCI-PCI bridge
+  - konfiguracni prikazy
+    - dve dvojslova v I/O prostoru se pouzivaji pro generovani konfiguracni transakce
+    (0x0CF8, 0x0CFC -> adresa, data)
+  - enumerace sbernice
+    - zkousi cist Vendor a Device ID -> vime jake zarizeni jsou pripojena -> muzeme je prislusne nakonfigurovat
+  - rozsah adres je zarizeni pridelen v jeho konfiguracnim souboru
+  - konfiguraci muze provadet pouze PC!!
+    - prvky bus master tuto moznost nemaji
+
+  <img src="../img/08/39.png">
+
+- BAR = Base Address Register Management
+  - base adresa PCI I/O prostoru
+
+- Plug and Play (PNP)
+  - pripousti aby se karty vkladali do libovolneho konektoru bez zmeny nastaveni prepinacu nebo jumperu
+    - mapovani adres, IRQ, COM portu atd se urcuje dynamicky behem startu systemu
+  - aby mohl system pracovat => karty musi obsahovat zakladni informace pro BIOS a operacni system
+    - typ karty a zarizeni
+    - pozadavky na pametovy proster
+    - pozadavky na prideleni preruseni
+
+- elektricke a casove specifikace
+  - PCI pripousti dve napetove urovne signalu
+    - 5V, 3.3V
+  - PCI vyuziva odrazu na konci signalovych linek
+    - kazdy vodic je nezakoncena prenosova linka, jejiz signal se po prichodu na konec odtazi
+    - => platne napetove urovne jsou ziskany po jednom odrazu => snizuje cenu protoze se nemusi pouzivat vysokovykonosti vystupni budice
+  - PCI "handshaking" se provadi v kazdem hodinovem cyklu
+
+- vyvoj pozadavku na prenosove rychlosti
+  - multimedialni aplikace vyzaduji rychle a efektivni zpracovani dat po metalickych i bezdratovych spojich
+  - vykon CPU se zdvojnasobuje kazdych 18 mesicu
+    - zatimto vykon PC sbernice se zdvojnasobuje jednou za 3 roky
+
+- zaklady sbernice PCI express
+  - seriova, point-to-point (mezi dvema zarizenima), low-voltage, rozdilova (napetove urovne)
+  - full duplex
+  - skalovatelne linky - x1, x4, x8, x16
+  - prenosovy protokol zalozeny na packetech
+  - SW kompatibilni s vysokymi naroky na rychlost
+  - pokrocile reportovani chyb
+  - rozsiritelnost
+    - pridanim dalsiho spoje se zvysi sirka pasma
+
+      <img src="../img/08/42.png">
+
+  - spolehlivost, dostupnost, built-in quality of service
+  - zvyseni rychlosti prenosu a sirky pasma
+
+  <img src="../img/08/41.png">
+
+  - neni potreba arbiter (spoj je point-to-point)
+  - terminologie
+    - link = spoj mezi dvema zarizenima na PCI Excpress (obecne spojeni ne jako jeden drat)
+    - Lane = dvojice vodicu (diferencialni signal)
+
+  <img src="../img/08/43.png">
+
+  - root complex: propojeni podsystemu na procesor a pamet
+    - muze to byt napriklad graphics & memory controller hub (MCH) nebo jeho kombinace s IO hubem (ICH)
+  - prepinace
+    - moznost koexistence PCI expross s PCI/PCI-X
+    - kazdy spoje je realizovatelny na ruznych rychlostech
+
+    <img src="../img/08/44.png">
+
+  - toky dat v pocitaci se sbernici PCI Express
+
+    <img src="../img/08/45.png">
+
+  - flow-control (FC)
+    - na ruznych urovnich maji FC ruznou funkci
+    - Uroven Root Complex: posilani packetu do prepinace
+      - smerovani se odehrava az na urovni switche
+
+    <img src="../img/08/46.png">
+
+  - transakce na sbernici PCI Express
+    - request-completer (pozadavek vyslan iniciatorem a zpracovan cilovym zarizenim)
+    - pozadavek muze jit pres prostrednika (napr z Root Complex pres switch az do endpoint zarizeni)
+    - typy transakci
+      - pametove transakce
+      - VV transakce
+      - konfiguracni transakce
+      - transakce typu zprava (notifikace)
+  - struktura packetu a jeho "rozbalovani" je obdobna TCP/IP stacku
+
+    <img src="../img/08/47.png">
+
+    - prinasi built-in checky jako poradi packetu, CRC atd
