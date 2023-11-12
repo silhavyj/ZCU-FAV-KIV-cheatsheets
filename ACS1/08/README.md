@@ -384,3 +384,190 @@
   - behem adresni faze se predava startovaci adresa a typ transakce
   - vsechna zarizeni na sbernici si zaznamenaji adresu a typ transakce
     - cilove zarizeni pak nakopiruje adresu do adresniho citace a samo provaci pak jeho inkrementaci
+  - burst rezim neni pro zarizeni povinny (pokud master zahaji prenos a zarizeni burst nepodporuje => dojde k ukonceni prenosu)
+  - rozlisuji se zarizeni s jednou funkci a multifunkcni zarizeni
+    - kazda funkce obsahuje vlastni individualne adresovatelny konfiguracni prostor => obsahuje konfiguracni registry
+  - v procesu konfigurace se softwarove detekuje pritomnost "funkci" na sbernici a lze tak nastavit bezkonfliktni provos vsech zarizeni
+
+- uvod do operaci sbernice PCI
+  - adresni faze
+    - ve stejnou dobu iniciator identifikuje ciloe zarizeni a typ transakce
+    - iniciator aktivuje signal FRAME#
+    - kazde PCI cilove zarizeni zachycuje adresu do registru typu latch a dekoduje ji
+    - adresni face trva jednu periodu hodin
+    - soucasne s adresou vydava iniciator i type transakce (command)
+    - pritomnost platne adresy je doprovazena signalem FRAME#
+      - na zaklade techto signalu muze cilove zarizeni urcit zda se bude ucastnit transakce nebo ne
+      - vybrane zarizeni odpovida signalem DEVSEL#
+
+- trvani transakce
+  - aktivace signalu FRAME# na pocatku adresni fazy
+  - signal zustane aktivni do konce datove faze
+
+- datova faze
+  - pocet datovych bytu ktere se prenesou behem jedne datove faze je urcen poctem "Command/Byte Enable" signalu aktivovanych iniciatorem
+  - jsou pouzity signaly #IRDY a TRDY (= ini iniciator ready, target ready)
+  - kazda datova faze trva alespon jeden takt
+  - neni predavana delka prenosu ale pripravenost prijmout dalsi polozku
+    - plus indikace toho jestli se jedna o posledni polozku
+    - posledni datova faze je provazena IRDY# = 1 a FRAME# = 0
+  - ukonceni transakce a navrat sbernice do cekaciho stavu
+    - uvolnenim signalu FRAME# a aktivaci signalu IRDY#
+    - po ukonceni posledniho datoveho prenosu vraci iniciator sbernici PCI do cekaciho stavu (idle state) deaktivaci signalu IRDY#
+
+- signaly PCI
+  - hodiny & reset
+    - CLK
+      - PCI vstup hodin
+      - vsechny signaly jsou vzorkovane na nabezne hrane hodin
+    - RST#
+      - asynchronni reset
+  - rizeni transakci
+    - signaly iniciatoru
+      - FRAME# - I/O
+        - oznamuje zacatek/konec transakce
+        - IRDY# - I/O
+          - "I-Ready"
+          - aktivaci iniciator sdeluje ze je schopen vysilat/prijimat data
+    - signaly ciloveho zarizeni
+      - TRDY# - I/O
+        - "T-Ready"
+        - Jestlize "target" aktivuje tento signal, sdeluje iniciatoru ze je schopen vysilat/prijimat data
+      - STOP# - I/O
+        - Oznameni ze target potrebuje ukoncit transakci
+      - DEVSEL# - I/O
+        - device select
+        - cast distribuovaneho dekodovani adresy na PCI
+          - kazdy target odpovida na dekodovani adresy ktera jse spojena s kazdou transakci
+          - jestlize target rozpozna svoji adresu, aktivuje DEVSEL# aby sdelil iniciatorovi ze se zucastni transakce
+    - konfiguracni signaly
+      - IDSEL - I
+        - "ID-Sel"
+        - individualni vyberovy signal zarizeni pro konfiguraci (neco jako chip select?)
+        - dovoluje systemovemu hostu konfigurovat agenty jeste pred tim nez jsou znamy jejich PCI adresy na ktere pak musi odpovidat
+  - adresni a datove signaly
+    - AD[31:0] - I/O
+      - 32-bitova adresa/data
+      - PCI pouziva little endian
+    - C/BE#[3:0] - I/O
+      - 4-bitove pole command/byte enable
+      - definuje prikazy PCI behem adresni faze
+      - Indikuje byte enable behem datovych fazi
+    - PAR - I/O
+      - paritni bit
+      - XOR z AD[31:0], C/BE#[3:0] a PAR musi dat 0 (suda parita)
+  - chybove signaly
+    - PERR# - I/O
+      - parity error
+      - agent deaktivuje svuj PERR# behem konfigurace PCI
+    - SERR# - I/O
+      - indikace vazne systemove chyby (napr chyba parity v adrese)
+      - muze vyvolat NMI (nemaskovany interrupt) popr reset (u nekterych systemu)
+  - aritracni signaly
+    - typkaji se pouze iniciatoru!!
+    - REQ# - O
+      - aktivovan iniciatorem - zadost o sbernici
+      - dvoubodovy spoj s arbitrem - kazdy iniciator ma svoji REQ# linku - I
+    - GNT# - I
+      - aktivovana systemovym arbitrem - potvrzeni prideleni sbernice iniciatoru
+      - taktez dvoubodovy spoj
+
+    <img src="../img/08/28.png">
+
+- Arbitrace PCI
+  - vazana na pristupy
+    - master musi projit arbitraci pro kazdy pristup
+  - centralni arbitracni schema
+    - kazdy master ma svuj signal zadosti i odpovedi
+      - request & grant
+  - arbitrace je skryta
+    - probiha behem predchazejiciho cyklu sbernice
+
+- parkovani sbernice
+  - parkovani dovoluje arbitru vyrat agenta aktivaci jeho GNT# signalu
+  - pokud zadny jiny agent nezada o sbernici muze si ji puvodni agent ponechat
+  - arbiter urcuje jakym zpusobem je proveden vyber
+    - fixni, naposledy pouzity, ..., nebo zadny
+
+- zakladni operace sbernice PCI
+  - pojmy
+    - Doubleword (DWORD): 32 bitu
+    - Quadword (QWORD): 64 bitu
+    - Burst transakce: kazda transakce obsahujici vice nez jednu datovou fazi
+    - Idle state (neaktivni sbernice)
+      - vstupuje se do nej deaktivaci FRAME# a IRDY#
+
+- prenosove rezimy (normal vs burt mode)
+
+  <img src="../img/08/29.png">
+
+  <img src="../img/08/30.png">
+
+  - CPU vystavy adresy a data a PCI bridge jej "prekonvertuje" a prenese jako burst mode?
+
+- priklad zakladni operace zapisu
+  - ctyri dvojslova jsou zapsana iniciatorem do ciloveho zarizeni (target)
+
+  <img src="../img/08/31.png">
+
+  - operace zapisu
+    1) Adresni faze
+    - aktivace FRAME#
+    - nastaveni linek C/BE a AD[31:0]
+    2) Linky pro handshake
+    - target nastavuje TRDY (= target ready)
+    - iniciator nastavuje IRDY (= iniciator ready)
+    3) Datovy prenos
+    - nastaveni linek BE, ktere indikuji velikost prenasenych dat
+
+  <img src="../img/08/32.png">
+
+  - pozn: parelelismus PCI je v tom ze pro kazdy signal ma jeden vodic
+
+- dekodovani adres u target zarizeni
+  - PCI pouziva distribuovane dekovani adresy
+    - zacatek transakce na PCI sbernici
+    - kazdy potencialni "target" na sbernici dekoduje PCI adresu aby urcil zda patri do jeho vyhrazeneho adresniho prostoru
+      - jednomu cilovemu zarizeni muze byt prirazen vetsi adresni prostor nez jinemu a musi tedy reagovat na vice adres
+    - cilove zarizeni ktere zahrnuje PCI odresu oznamuje ucast na transakci aktivaci signalu DEVSEL#
+
+    <img src="../img/08/33.png">
+
+  - dekodovani na strane cile
+    - dekodovani adresy muze mit rozdilnou rychlost
+    - jestlize transakce zustane bez odezvy (nikdo neaktivuje DEVSEL#), nastava "Master Abort"
+
+    <img src="../img/08/34.png">
+
+- priklad operace cteni
+  - ctverice - dvojslov je ctena v rezimu burst z cile do iniciatoru
+
+  <img src="../img/08/35.png">
+
+  <img src="../img/08/36.png">
+
+- dalsi pojmy ohledne PCI sbernice
+  - zmenovy cyklus (turnaround cycle): mrtvy cyklus sbernice zabranujici konfliktum
+  - cekajici stav (wait state)
+    - cyklus ve kterem je mozne prenaset data ale zadna data penesena nejsou
+    - target deaktivuje TRDY# (oznameni NEpripravenosti)
+    - iniciator deaktivuje IRDY# (oznameni NEpripravenosti)
+  - ukonceni ze strany targetu
+    - targete aktivuje signal STOP# => ukonceni aktualni transakce
+
+- cteni "cile" - dulezite
+  - cekajici stavy mohou byt vkladany dynamicky iniciatorem nebo cilem deaktivaci signalu TRDY# nebo IRDY#
+  - kterykoli z obou agentu muze signalizovat konec transakce
+    - cilove zarizeni signalizuje ukonceni transakce aktivaci STOP# signalu
+    - iniciator zase deaktivaci FRAME#
+  - agent s jednim cekacim stavem vklada cekaci stav na pocatku kazde datove faze
+    - typicky pokud je agent implementovan starsimi technologiemi
+  - nutnost vlozit cekaci stav typicky nastava kdyz jeden z agentu poskytuje data
+    - bud zapis iniciatorem
+    - nebo cteni ze zarizeni typu "target"
+
+- typy ukonceni transakce "cilovym" agentem
+  - target retry - nejsem pripraven zkus to pozdeji
+  - target diconnect with data - nemohu dalsi sousto...OK, jen jedno ale
+  - target disconnect without data - nemohu dalsi sousto...doopravy!
+  - target abort - vazne varovani
