@@ -128,3 +128,120 @@
   - tomasulo metoda
     - rezervacni stanice vs forwarding a caching
     - "docasne" registry jsou vyuzivany jako velke mnozstvi virtualnich registru
+
+- HW schemate pro ILP
+  - klicova myslenka: dovolit zpracovani instrukci za pozastavenou instrukci
+    - dekodovani => vlozeni instrukci a cteni operandu
+    - dovoluje out-of-order-execution => out-of-order dokonceni (mimo poradi)
+  - proc v HW v dobe vypoctu? (stataticka vs dynamicka analyza)
+    - funguje kdyz zavislost neni znama v dobe prekladu
+    - zjednodusuje prekladace
+    - dovoluje dobre zpracovani kodu urceneho pro jiny stroj (optimalizovaneho pro jiny stroj)
+  - out-of-order provadeni deli ID stupen
+    - vkladani - dekodovani instrukci, kontrola vzniku strukturnich hazardu
+    - cteni operandu - cekani dokud neodedzni datove hazardy
+
+- Tomasulo algoritmus
+  - cil: vysoky vykon bez vyuziti specialnich prekladacu
+  - rozdil mezi Tomasulo algoritmem & technikou scoreboard
+    - rizeni & buffery (nazyva "rezervacni stanice") jsou distribuovany uvnitr funkcnich jednotek oproti centralizovanemu usporadani u scoreboardingu
+    - registry v instrukcich jsou nahrazeny pointery na buffery rezervacni stanice
+    - HW prejmenovani registru aby se zabranilo WAR a WAW hazardum
+    - spolecna datova sbernice (CDB) vysila vysledky funkcnim jednotkam (broadcast)
+    - s operacemi load a store je zachazeno jako s funkcnimi jednotkami
+  - navrzen pro IBM jeste pred tim nez se objevily cache pameti => dlouha latence pameti
+
+  - 3 stupne  Tomasulova algoritmu
+      1) vkladani: Presun instrukce z fronty FP operaci
+          - jeli rezervacni stanice volne, vlozi instrukci a vysle operandy (prejmenuje registry)
+      2) provedeni: operace provadena s operandy (EX)
+          - jsouli operandy pripraveny, pak provedeni
+          - v opacnem pripade je sledovana spolecna sbernice zda neprisel vysledek
+      3) zapis vysledku: dokonceni provadeci face (WB)
+          - zapis po spolecne sbernici vsem cekajicim jednotkam; oznaci rezervacni stanici jako pripravenou
+
+    - common data bus (= CDB): data + zdroj (prichazi po sbernici)
+
+    <img src="../img/10/11.png">
+  
+  - komponenty rezervacni stanice
+    - Op - operace k provedeni v jednotce (napr +/-)
+    - Qj, Qk - rezervacni stanice produkujici zdrojove registry
+    - Vj, Vk - hodnoty zdrojovych operandu
+    - Rj, Rk - flagy indikujici zda Vj a Vk jsou "ready"
+    - Busy - indikujici ze rezervacni stancie a FU je "busy"
+  
+  - stavovy registr vysledku
+    - indikuje ktera funkcni jednotka bude zapisovat kazdy regist, pokud nejaky existuje
+    - prazdy pokud zadne zpracovavane instrukce (pending) nebudou psat do tohoto registru
+
+- Tomasulo priklad
+
+  <img src="../img/10/12.png">
+
+  <img src="../img/10/13.png">
+
+  <img src="../img/10/14.png">
+
+  - jmena registru jsou "prejmenovana" v rezervacnich stanicich
+  - dokonceni load1 - kdo ceka na load1?
+
+  <img src="../img/10/15.png">
+
+  - dokonceni load2 - kdo ceka na load2?
+
+  <img src="../img/10/16.png">
+
+- Tomasulo souhrn
+  - rezervacni staniceL: prejmenovava do vetsiho souboru registru + docasne pamatuje zdrojove operandy (buffering)
+    - registry prestavaji byt uzkym mistem
+    - zabranuje WAR a WAW hazardum ktery se vyskytovaly u scoreboardingu
+    - dovoluje rozvijeni smycek (loop unroalling) v HW
+  - neomezuje se jen na zakladni blok
+    - integer jednotka pracuje dal az za skoky
+  - prispevek
+    - dynamicke planovani
+    - prejmenovani registru
+    - load/store zjednoduseni
+
+- Tomasulo se spekulaci
+  - *Issue*
+    - prazdna rezervacni stanice a prazdny ROB slot
+    - operandy jsou zaslany do rezervacni stanice z registroveho souboru a nebo z ROB (reorder buffer)
+    - tento stupen se oznacuje dispatch
+  - *Execute*
+    - monitoruje operandy v CDB, hlida RAW hazardy
+    - jsou-li obe operandy k dispozici => provede operaci
+  - *Write Result*
+    - Je-li hotovy je vysledek zapsan do CDB prostrednictvym ROB a do kazde dalsi cekajici rezervacni stanicei
+  - *Commit* - 3 pripady
+    1) Normalni commit: zapis registru "in order" Commit
+    2) Store: aktualizace pameti
+    3) Nekorektni vetveni: zahodi ROB obsah rezervacni stanice restartuje vypocet na korektni hodnote PC
+
+- Nevyhody Tomasulova mechanismu
+  - slozitost
+  - mnoho rychlych asociativnich pameti (CDB)
+  - vykon omezeny sbernici CDB (= common data bus)
+    - kazdy CBD musi prochazet k vetsimu poctu funkcnich jednotek => velke kapacity, velka hustota propojeni
+    - pocet FU ktere mohou dokoncit operaci v jednom cyklu je omezen na jednu
+      - nasobne CBD => vice FU logiky pro paralelni asociativni pameti
+  - neprecizni interrupty/vyjimky!!
+
+  <img src="../img/10/18.png">
+
+- Rozdily mezi Tomasulovym algoritmem a Scoreboardingem
+  - Tomasuluv algoritmus
+    - rizeni & buffery ("rezervacni stanice") jsou distribuovany mezi funkcni jednotky
+    - registry v instrukcich nahrazeny pointery na buffery rezervacnich stanic
+    - HW prejmenovani registru kvuli zamezeni WAR a WAW hazardum
+    - common data bus (CDB) vysila vysledky funkcnim jednotkam
+    - s load/store je zachazeno jako s funkcnimi jednotkami (FU)
+    - 3 stupne: issue, execution, write back
+
+  - Scoreboarding
+    - rizeni a buffery jsou centralizovane
+    - pouziva aktualni registry
+    - nevklada pokud nastava strukturni nebo WAW hazard
+    - cekani na WAR hazardy
+    - 4 stupne: issue, read operands, execution, write back
