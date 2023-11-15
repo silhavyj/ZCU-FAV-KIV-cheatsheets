@@ -287,3 +287,123 @@
     - priklad: T/TN
       - pokud posledni skok nebyl proven => kladna predikce T
       - pokud posledni skok byl proveden => zaporna predikce NT
+
+      <img src="../img/09/22.png">
+
+      <img src="../img/09/23.png">
+
+- prediktor s korelaci (pokracovani)
+  - pozorovali jsme ho jen ve velmi specifickem pripade
+  - je velmi jednoduchy a je specialnim pripadem obecnejsiho `(m,n)` predikatoru
+    - vyuziva chovani poslednich dvou vetvi
+    - vybira z `2^m` ruznych predikatoru
+    - kazdy z techto prediktoru je n-bitovy prediktor
+  - vyzaduje mnohem vice HW ale princip je stejny
+
+- "potrhlosti" predikce vetveni
+  - v realnych systemech jsou casto implementovane nasobne prediktory
+  - nadrazeny "metaprediktor" vybira ktery prediktor prave pouzije
+  - => nazyva se kombinovany prediktor (tournament predictor)
+
+- dynamicka predikce skoku (BHT)
+  - vykon = f(uspesnost, cena spatne predikce)
+  - tabulka historie vetveni (BHT = Branch History Table)
+    - dolni bity PC adresuji indexovou tabulku 1-bitovych hodnot:
+      - rika zda byl skok od posleniho pruchodu konan
+      - bez kontroly adresy
+  - problem:
+    - ve smycce (napr for cyklus) zpusobi 1-bitova BHT dve spatne predikce
+      - pri prvnim pruchodu kdy je naplanovan odchod misto standardni iterace smyccky
+      - pri ukoncovani smyccky kdy se odchazi
+  - ucinnost:
+    - spatna predikce nastava kvuli spatnemu odhahu pro dany podmineny skok
+    - pri dostupu do tabulky pomoci indexu je ziskana historie jineho skoku
+
+- predikce vetveni s korelaci
+  - myslenka: zaznamenejme `m` naposledy provedenych vetveni jako provedene `T` nebo neprovedene `NT` a pouzijme tento vzorek k vyberu spravne n-bitove historie vetveni
+  - obecne `(m,n)` prediktor znamena zaznamentavani poslendich `m` vetvi k vyberu mezi `2^m` tavulkami history, kazda s n-bitovymi citaci
+    - drive uvedeny prediktor je tedy prediktor typu `(0,2)`
+  - globalni historie vetveni
+    - m-bitovy posuvny register obsahujici `T/NT` status poslednich `m` vetveni
+    - kazda polozka tabulky obsahuje `m` n-bitovych prediktoru
+
+- Priklad: Prediktor (1,1)
+
+  <img src="../img/09/24.png">
+
+- Predikce vetveni s korelaci
+  - chovani T/NT naposledy provedenych skoku je vztazeno na chovani pristiho skoku (stejne jako historie tohoto skoku)
+  - chovani naposledy provadeneho vetveni vybira mezi 4 predikcemi pristiho skoku a provede aktualizaci predikce
+
+  <img src="../img/09/25.png">
+
+  - (2,2) prediktor: 2 bity globalni, 2 bity lokalni
+
+- presnost ruznych schemat
+
+  <img src="../img/09/26.png">
+
+- kombinovane prediktory (tournament)
+  - viceurovnovy prediktor vetveni
+  - obvykla volba mezi globalnimi a lokalnimi prediktory
+
+  <img src="../img/09/27.png">
+
+  - pouziti n-bitovych citacu se saturaci pro vyber mezi prediktory
+    - citac se statuaci = citac ktery nepretyka ale zastavi se na maximalni hodnote
+
+- dvoubitovy saturacni citac jako selektor prediktoru
+  - oba prediktory jsou vyhodnocovany podle spravnosti vysledku bez ohledu na to ktery byl aktualne pouzit k vyhodnoceni vysledku
+  - jsou-li vystupy prediktoru stejne -> selektor prediktoru neni aktualizovan
+  - prediktor 1 spravne; prediktor 2 spatne => selektor prediktoru je INKREMENTOVAN (se saturaci)
+  - prediktor 1 spatne; prediktor 2 spravne => selektor prediktoru je DEKREMENTOVAN (se saturaci)
+  - vyber prediktoru pro aktualni instrukci vetveni se provadi pouze podle hodnoty MSB selektoru prediktoru
+    - 1 => pouzije se predikce 1
+    - 0 => pouzije se predikce 2
+
+- porovnani prediktoru
+  - vyhodou kombinovaneho prediktoru je schopnost vybrat spravnou strategii predikce pro dany podmineny skok
+
+  <img src="../img/09/28.png">
+
+- specialni pripad - navratove adresy
+  - protoze se procedury resi zasobnikem => i tady se navratove adresy ukladaji do maleho bufferu ktery pracuje jako zasobnik
+  - 8-16 polozek staci na podstatne snizeni neuspechu odhadu
+
+- Branch Target Buffer (= BTB)
+  
+  <img src="../img/09/29.png">
+
+  <img src="../img/09/30.png">
+
+  - vypocet adresy cile skoku je "drahy" a zpozduje nacitani instrukci
+  - BTB uklada PC stejnym zpusobem jako cache
+    - PC podmineneho skoku je odeslan do BTB
+  - je-li nalezena shoda => vraci se odpovidajici predikovana hodnota PC (adresa cile skoku)
+  - kona-li se predikovane vetveni, nacitani instrukci pokrauje od adresy kam ukazuje dodana hodnota PC
+
+  - adresa ve stejnou dobu jako predikce
+    - Adresa - index skoku pro zistkani predikce AND adresy cile skoku (kdyz se kona)
+    - shoda se musi overit nyni protoze nesmi pouzit spatnou cilovou adresu
+
+    <img src="../img/09/31.png">
+
+  - v BTB je ulozena adresa a cil skoku
+  - z adresy PC + 4 se nacita instrukce, nenajdeli se shoda
+  - v BTB se ukladaji jen provedena vetveni a skoky
+  - pristi PC je urceno driv nez je skok nacten a dekodovan
+
+    <img src="../img/09/32.png">
+
+- dynamicka predikce skoku - souhrn
+  - predikce se stala dulezitou soucasti provadeni vypoctu
+  - tabulka historie vetveni (BHT): 2 bity pro dobrou predikci smycek
+  - korelace: naposledy provedene vetveni je korelovani s nasledujicim
+    - bud jina instrukce vetven (GA)
+    - nebo dalsi provedeni tehoz vetveni (PA)
+  - kombinovane prediktory zohlednuji dalsi uroven vyuzitim vice prediktoru
+    - jeden obvykle vyuziva globalni informace
+    - druhy je zalozen na analyze lokalniho chovani
+    - => navzajem jsou kombinovany selektorem
+    - pozn.: v roce 2006 byly pouzivane kombinovane prediktory s kapacitou pameti cca 30K bitu
+  - Branch Target Buffer (BTB): zahrnuje adresu vetveni a predikci
