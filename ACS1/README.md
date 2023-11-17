@@ -1,0 +1,19 @@
+- 01_02
+  - historie (generace PC, mooruv zakon)
+  - logicke obvody (digital vs analog, kombinacni vs sekvencni, popis, hradla, bloky, charakteristika)
+  - booleovska logika, hazardy
+  - zobrazeni cisel (zakladni zapis cisel, pozicni system)
+    - primy kod, inverzni kod, doplnkovy kod, IEEE754
+  - ALU (popis, vstupy, vystypu, overflow, carry, zero, control, ...)
+  - HA, FA, FU ze dvou HA
+  - RCA (zpozdeni, generace, propagace, anihilace)
+  - paralelni asynchronni sumator
+  - CLA (odvozeni, vyhody & nevyhody, zpozdeni, serializace CLA, stromova struktura)
+  - Carry-Skip Adder (propagace vs vypocet, promenne delky bloku)
+  - Carry-Select Adder (vypocetni slozitost, plocha, velikost bloku, vyhody & nevyhody)
+  - CIA (Carry-Inc Adder) (vylepseni Carry-Select Adder, vyuziti P,G signalu => vyber vysledku pre XOR)
+  - odcitacka (dvojkovy doplnek -> +1 realizovano pres Cin = 1)
+  - seriova scitacka
+  - citace
+    - straight ring counter (manual set 1 pomoci reset)
+    - twisted ring counter
