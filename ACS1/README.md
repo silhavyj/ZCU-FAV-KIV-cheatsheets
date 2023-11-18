@@ -17,3 +17,39 @@
   - citace
     - straight ring counter (manual set 1 pomoci reset)
     - twisted ring counter
+
+- 03
+  - typy metod nasobeni (sekvencni, paralelni - iteracni aritmeticka pole, specialni kodovani)
+  - posuvne jednotku (paralel/serial IO, smer, pocet kroku)
+    - univerzalni posuvny registr
+    - Barrel Shifter
+    - Posivna jednotka multiplexerem
+    - logaritmicka posuvna jednotka
+    - posuvna matice
+  - parcialni souciny (nasobenec, nasobitel, ...)
+  - viceoperandove scitani (registr parcialniho souctu, volba typu scitacky, superlinerni vs logaritmicky narust casove slozitosti s `n` a `k`)
+  - vytvareni parcialniho soucinu
+    - zpozdeni nlog(n), posun vlevo vs posun vpravo + soucet (=> sirka scitacky)
+  - seriova scitacka (princip - blokove schema)
+    - akcelerace pouzitim vetsiho poctu scitacek (generujeme vicero paracialnich soucinu naraz -> pouziti vice scitacek seriove)
+    - odstraneni serioveho zapojeni (nevyhoda) => vicevstupove scitacky, stromove zapojeni (HW narocne)
+  - nasobeni zapornych cisel
+    - zaporny nasobenec (expanze sign bitu)
+    - zaporny nasobitel (odecteni korekcniho clenu (-A))
+    - => nevyhoda epanze znamenkoveho bitu (hodne scitani 1)
+  - boothuv algoritmus - (2,1); (3,2); (4;3) ; s vetsim posunem redukuje pocet parcialnich soucinu
+    - lze uplatnit i pro nasobeni s jinym zakladem nez 2 (napr 4) => lepsi je provest prekodovani abychom pouzivali cifry co jsou mocninou 2 (napr {0,1,2,3} -> {-2,-1,0,1,2})
+    - odvozeni dle YT videa
+  - paralelni algoritmy nasobeni
+    - redukce pomoci paralelnich dilcich nasobicek (3,2) - FA, (5,5,4)
+    - redukcni posloupnost
+  - Carry-Save Adder = (3,2) redukce
+  - Wallace nasobicka
+  - iteracni aritmeticka pole
+    - naivni postup
+    - cile uprav
+    - Baugh-Wooley nasobicka (+ schema s negaci MSB)
+    - generovani elementarnich soucinu uvnitr pole (sireni cary, delka kriticke cesty)
+      - struktura jedne bunky nasobicky (muze implementovat vicero funkci)
+    - piplining
+    - pole pro nasobeni s carry-save-adder
