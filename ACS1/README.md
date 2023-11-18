@@ -96,3 +96,40 @@
   - rozsireny haminguv kod (pridani parity)
 - ECC vs EDC, SRAM vs DRAM, NAND flash layout
 - CRC kody
+
+## 06
+
+- ISA (mechanismus SW rika HW co delat, co definuj dobre rozhrani, efektivita HW + abstrakce SW)
+  - otazky pri navrhu instrukcni sady
+  - pevna vs promenna delka instrukci (vyhody & nevyhody)
+  - vyhody velkeho vs maleho poctu registru
+  - architektury z pohledu kde jsou ulozene operandy (vyhody + nevyhody)
+    - zasobnikova, ACC, memory-memory, register-memory, load-store
+    - ortogonalita ISA
+- vyhody a neyvhody pouzivani registru
+- adresace pameti (word, big endian vs little endian)
+- typy adresnich modu
+  - direct register, immediate, offset (displacement), index, indirect register, direct memory, indirect memory, auto inc, auto dec, scaled
+  - navic vyjimky kdy se adresuje PC
+- typy instrukci (aritmeticko-logicke, data transfer, control, system, floating point, string, graphics)
+- formaty instrukci (MIPS r, i, j)
+- podmineny skok (relativni vuci PC, cykly, pole, ...)
+- paralelni systemy
+  - grid computing, cluster computing, SMP, multi-core CPU
+  - flynnova taxonomie
+  - pamet paralelnich systemu (distribuovana vs sdilena - IPC)
+    - SMP, NUMA (obrazky, vyhody, nevyhody), + interconnect
+- logicky vs fyzicky adresni prostor (L=F, L>F, L<F)
+- segmentace (code, data, zasobnik, ...)
+- strankovani (algoritmy vyhazovani stranek)
+- SRAM vs DRAM (nutnost ECC)
+- sbernice (datova, adresni, ridici)
+- cache
+  - casova vs prostorova lokalita dat
+  - propis do hlavni pameti (primi zapis, zapis s mezipameti, zpetny zapis, zpetny zapis pouze jiz propsaneho)
+  - velikost bloku, hit rate, isntrukcni vs datova cache
+  - info ulozene v cache: data, adresa, dirty bit, info o pouziti polozky
+  - algoritmy invalidace cache zaznamu: random, FIFO, LRU, MFU, ..., razeni cachi
+  - plne asociativni cache
+  - cache s primym mapovanim
+  - N-cestna cache
