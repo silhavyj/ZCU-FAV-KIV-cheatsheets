@@ -133,3 +133,24 @@
   - plne asociativni cache
   - cache s primym mapovanim
   - N-cestna cache
+
+## 07
+
+- mikroarchitektura (= implementace ISA)
+  - popis radice mikroinstrukci/mikroprogramoveho automatu (vystupni signaly, stavy ridicich jednotek)
+  - synchronni vs asynchronni automaty
+  - Mealyho vs Mooruv automat
+- vyhody mikroprogramoveho rizeni (=> imlementace rozsahle isntrukcni sady)
+- mapovani ISA do architektury
+- slozitost firmware - mikroskopicka slozitost a optimalizace vs strojove nezavisly model
+- zakladni pojmy: mikrooperace, mikroinstrukce, mikroprogram, firmware
+- 2 velke skupiny vystupnich signalu
+- mikroinstrukcni pole (co obsahuje mikroinstrukce + nasledujici adresa)
+- rekukce kapacity ridici pameti (rychlost vs kapacita)
+  - nanoprogramovani (-> 2 mensi pameti - pointer na vystupni pole -> redukce sirky mikroinstrukce)
+- priklad mikroarchitektury CPU (MIC-1)
+  - MAR, MDR, PC, MBR, H, SP, TOS, B-bus, C-bus
+  - mapovani MAR na sbernici (posun `<< 2`)
+  - format instrukci MIC-1: addr, JAM (zpusob vyberu pristi addr), ALU, C, Mem, B
+  - pridani latch registru na IO ALU => pipelining
+- horizontalni vs vertikalni mikrokod
