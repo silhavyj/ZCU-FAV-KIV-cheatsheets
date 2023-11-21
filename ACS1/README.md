@@ -154,3 +154,97 @@
   - format instrukci MIC-1: addr, JAM (zpusob vyberu pristi addr), ALU, C, Mem, B
   - pridani latch registru na IO ALU => pipelining
 - horizontalni vs vertikalni mikrokod
+
+## 08
+
+- vyhody seriove sbernice (delka, mene kabelu, ...)
+- seriova vs parlaleni sbernice (clockskew, crosstalk, ...)
+- parametry komunikace (protokol, pocet draru, synchronizace, napetove urovne, differencialni, halfduplex, atd.)
+- RS232 (UART)
+  - norma zahrnuje i handshakove signaly
+  - baudrate (1200,2400,4800,9600,115200)
+- RS485 (robustni UART)
+  - prumyslove prostredu
+  - kroucena dvojlika, rozdilove napeti, terminatory
+- CAN
+  - 11 vs 29 ID, arbitrace
+  - struktura ramce: ID, CNTL, DATA, CRC, EOF
+- I2C
+  - SCL, SDA; SDA se meni pouze pokud SCL == low (vyjimka: START, STOP)
+  - struktura ramce: START, 7-bit ADDR, RW, DATA, STOP
+  - pokazdych 8 bitech => prijem ACK
+  - detekce kolize: kontrola aktualniho stavu sbernice a aktulne vysilane hodnoty => musi byt stejne
+  - broadcast: 0b0000000
+- SPI: MISO, MOSI, CLK, CS
+- 1 Wire (morseovka?)
+  - nizke datove rychlosti
+  - unikatni 48 ID
+  - master
+    - vysilani 1 = kratky puls
+    - vysilani 0 = dlouhy puls
+  - slave
+    - vysilani 1 = nedela nic
+    - vysilani 0 = stahne sbernici na 0
+  - zakladni sekvence: puls (init), prikaz, a pak odesilani nebo prijimani dat
+- USB (jednotne nahrazeni starsich standardu jako RS232)
+  - point-to-point (master/slave)
+  - vicero zarizeni pres HUB (az 5 urovni zanoreni)
+  - komplexni, funguje na zaklade packetu (1. packet = token - typ prenosu, smer, cilove zarizeni)
+  - transfer dat pres pipe (viz Linux)
+  - rozdilove napetim halfduples, ID pridelovani dynamicky, vestavene CRC
+  - 4 typy prenosu: control, bulk, int, izochronni
+  - VID/PID
+- startsi typ sbernice (PCI bridge mezi CPU a mem)
+- novy typ sbernice centralni bridge (north/south)
+  - => sbernici lze provozovat pri ruznych rychlostech (north - fast, south - slow)
+- backplane sbernice
+- dvousbernicovy system
+- trisbernicovy system
+- synchronni vs asynchronni sbernice
+  - synchroni: muze nastat skew pri dlouhych vzdalenostech, kazde zarizeni musi podporovat danou rychlost
+  - asynchronni: skew nemuze nastat, musi obsahovat handshake
+- arbitrace: nejjednoduseni odstraneni chaosu -> zavedeni mastera (ale musi byt soucasti kazde transakce)
+  - arbitrcni schema daisy chain (zadost, grant, uvolneni); rizeni pres arbitr
+- IO mapovany do pametoveho prostoru (polling vs interrupt)
+- princip DMA (master na sbernici)
+- PCI (peripheral component interconnect)
+  - rychle PCU ale i obsluha pomalych IO
+  - backside bus vs frontside bus
+  - pristup k systemove pameti pro pripojena zarizeni
+  - pripojeni PCI k south bridge (PCIe k north)
+- PCI (pokracovani)
+  - multimaster, nezavislost na CPU, paralelni prenosy dat, 3 adresni prostory, dynamicke nastaveni frekvence hodin
+  - iniciator, target, agent, funkce
+  - burst rezim: adresni face + datova faze
+  - jedno funkci vs multifunkcni zarizeni (kazda funkce => vlastni konfigurovatelny adresni prostor = registry)
+  - adresni faze
+    - cilova adresa + typ transakce (vice zarizeni se muze ucastnit dane transakce)
+    - aktivace FRAME# signalu
+    - pokud se zarizeni chce zucastnit -> nastavi signal DEVSEL#
+  - datove faze
+    - pocet bytu v jedne polozce je dan signalem Command/Byte Enable
+    - celkovy pocet polozek neni znam -> pouziti IRDY# a TRDY# signalu
+    - posledni datova faze zakoncena IRDY# = 1 a FRAME# = 0
+  - signaly PCI: CLK#, RST#, FRAME#, IRDY#, TRDY#, STOP# (target konec), DEVSEL#, IDSEL# (konfigurace individualnich zarizeni na zacatku)
+  - adresni a datove signaly: AD[31:0] - little endian, C/BE (prikazy PCI - cteni z IO prostoru, zapis do konfiguracniho prostoru, atd.), PAR (paritni bit)
+  - chybove signaly (parity error, system error)
+  - arcbitracni signaly REQ#, GNT# (pridelen iniciatoru arbitrem)
+  - centralni arbitracni schema
+  - normal (kazde dato ma adresu) vd burst mode (start adresa + sekvence dat)
+  - vyznam cekajicich stavu (target oddeluje jednotlive datove polozky - cteni dat z targetu)
+  - adresni prostory targetu PCI
+    - konfiguracni (registry, nastaveni, typicky pres BIOS - zjistovani dostupnosti zarizni, konfigurace rychlosti, ...)
+    - IO - specialni instrukce - in out (mapuji se sem klavenice, seriove porty, atd)
+    - pametovy (pristup pomoci obecne instrukce CPU - mov, ld, str, ...)
+  - plug and play (PNP)
+    - karty musi obsahovat zakladni info pro BIOS
+  - vyuziva odrazu signalu
+- PCIe
+  - vykon CPU se zdvojnasobuje kazdych 18 mesicu ale sberice jednou za 3 roky => zavedeni PCIe
+  - seriove, point-to-point
+  - rozdilove napeti, fullduplex, vysoke narocky na rychlost, rozsiritelnost (pridanim dalsiho zarizeni -> zvetsni sirky pasma)
+  - neni potreba arbiter => point to point spojeni
+  - link (= spoj mezi PCIe zarizenima); lane (= dvojice vodicu -> diferencialni napeti)
+  - root complex
+  - pozadavky na PCIe mohou jit pres prostredniku (z root complex pres switch do endpoint zarizeni)
+  - zalozen na packetech (built in checky na ruznych vrstvach zapouzdreni)
