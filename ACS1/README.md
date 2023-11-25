@@ -248,3 +248,50 @@
   - root complex
   - pozadavky na PCIe mohou jit pres prostredniku (z root complex pres switch do endpoint zarizeni)
   - zalozen na packetech (built in checky na ruznych vrstvach zapouzdreni)
+
+## 09
+
+- idealni CPI pipeline
+- strukturalni hazardy, datove hazardy, ridici hazardy
+- ILP, ZB
+  - => pro zyznamne zvyseni vykonu se musi aplikovat ILP pres vice ZB
+  - nejjednodussi je paralelismus na urovni smycek (rozbalovani - staticky prekladacem nebo dynamicky predikci vetveni)
+- datove zavislosti: RAW (opravdova zavislost), WAR, WAW (reseni na urovni prekladace nebo HW)
+  - RAW: detekuji moznost vyskytu, urcuji poradi provadeni instrukci, urcuji horni hranici mozneho paralelismu
+- zavilost rizeni vypoctu (control dependant) instrukce
+- kdy je mozno ignorovat ridici zavislosti
+  - instrukce nemaji zadny vedlejsi efekt (bacha na vyjimky a na tok dat!)
+- rozbalovani smycek => minimalizace prostoje
+  - analyza datovych zavislosti, pouziti ruznych registru, rozbaleni RW instrukci (pokd nejsou zavisle!)
+  - limity: amdahluv zakon (zvyseni vykonu je omezene), narust velikosti binarky, nedostatek registru
+- predikce skoku: skocim/neskocim, cilova adresa
+  - kdyz vim jestli se skok provede/neprovede => muzu nacist instrukce do instrukcni cache + pipeline
+- cena za spatnou predikci roste s: hloubkou pipeline a s sirkou stroje (pocet paralelne vkladanych instrukci)
+- staticka predikce skoku: v dobe prekladu, ne vzdy mozna, nejlepsi je predpokladat ze se skok provede (smycky)
+- dynamicka predikce skoku
+  - zjistovani info z predchozich behu programu => vyhodnocovani
+- spatna predikce = vyprazdneni pipeline/cache
+- 1-bitovy prediktor (opakuje posledni akci)
+- 2-bitovy prediktor (toleruje max 2 spatne rozhodnuti)
+  - statove automaty (grafy): stav = planovana predikce, hrana = realita -> propojeni hran -> ruzne modifikace prediktoru
+- predikce vetveni s korelaci
+  - bere do uvahy i ostatni skoky (mohou byt korelovane) (if (d==0) d = 1 if (d == 1))...nekonecne opakovani
+    - 1-bitovy prediktor => vse spatne
+    - n-bitovy prediktor => stejne po case bude polovina spatne (akorat prvnich 2^(n-1) bude tolerovat)
+  - => kazdy skok bude mit 2 bity X/Y (napr. T/TN)
+  - pokud se zpletu => vybranou predikci nahradim realitou (T/TN)
+  - zobecneni (m,n) - historie poslednich m skoku (2^m tabulek kazda s n-bitovymi citaci)
+- BHT
+  - dolni bity PC = index do tabulky 1-bit hodnot (byl skok na dane addr proveden ci nikoliv)
+  - smyccky -> 2 spatne predikce
+  - prekryvani adres (spodni bity)
+
+- predikce vetveni s korelaci
+  - zaznamenava `m` naposledy provedenych vetveni jako provedene T nebo neprovedene NT k vyberu mezi `2^m` tabulkami historie vetveni kazde z n-bitovymi citaci
+  - globalni historie vetveni -> m-bitovy posuvny registr s korelaci
+- tournament prediktory - volba mezi glob. a loc. prediktory (prediktor 1,2 => inc/dec)
+  - dvoubitovy saturacni citac prediktoru; oba jsou vyuzivany
+- navratove adresy -> vkladani do bufferu (zasobnik)
+- BTB (branch target buffer)
+  - vypocet adresy cile skoku je drahy
+  - cache; target_addr = BTB[curr_addr] => rozhoduje se jestli se skok vubec kona nebo ne
