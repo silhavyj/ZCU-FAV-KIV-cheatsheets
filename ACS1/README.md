@@ -295,3 +295,29 @@
 - BTB (branch target buffer)
   - vypocet adresy cile skoku je drahy
   - cache; target_addr = BTB[curr_addr] => rozhoduje se jestli se skok vubec kona nebo ne
+
+## 10
+
+## 11
+
+- HW ztraceni energie: parazitni kapacity, zahrivani rezistoru, spinani tranzistoru, atd.
+- low power design IC
+  - velikost hradla
+  - piny s nizssi kapacitou = zapojeni signalu s castymi zmenami
+  - high performace vs low power
+  - power-gating (odepinani napajeni funkcim blokum ktere se prave nepouzivaji)
+  - dynamicke snizovani frekvence & napajeni (iPhone display)
+    - snizeni frekcence = redukce okamzite spotreby ale celkova je stejna (zkracenim frekvence natahneme periodu)
+- architektura
+  - uziti jineho algoritmu (seriova scitacka vs RCA)
+  - zmeny ve stylu kodovani
+  - pomalu se preklapejici logiky dame na zacatek log. obvodu
+  - hazardy: oddelit vstup logiky do doby nez se ustali (zpozdeni)
+  - pipeline: oddelit casti, vypocet provadi jen jedna cast, zbytek setri energii
+  - clock-gating (odepinani hodin)
+  - dobre pouzit kodovani kde se meni jen jeden bit (napr. gray code)
+- SW/HW
+  - sleep rezimy: HALT (odpojeni hodin), SNOOZE (pameti porad funguji), SHUTDOWN (jen cache funguji), HIBERNATE (odpojeni hodin i napajeni)
+  - vyuziti interruptu, DMA, OS (energy scheduling)
+  - zdroje enerige: staticke vs dynamicke parametry (templota, spicky ve spotrebne, zivotnost)
+  - ochrana proti prepolovani: z energetickeho hlediska neni diaoda vhodna (=> ubytek) -> lepsi pouzit mechanickou ochranu
