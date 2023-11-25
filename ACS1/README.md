@@ -298,6 +298,37 @@
 
 ## 10
 
+- predchazeni hazardum dynamickym planovanim
+  - dynamicke zamenovani poradi instrukci
+  - zjednodusuje prekladac (+ nektere zavislosti nejsou znamy v dobe prekladu)
+  - adaptivni reakce na zmeny (vypadek cache)
+  - "cross-platform" pri exekuci programu prelozeneho pro jinou strukturu pipeline
+- scoreboarding
+  - out-of-order execution (preskakovani instrukci ktere jsou pozastaveny kvuli hazardu)
+  - 4 faze zpracovani instrukce:
+    - fetch (strukturni a WAW hazardy)
+    - decode (RAW hazardy - cteni operandu, cache, forwarding)
+    - execute
+    - write back (WAR hazardy, priznak cached/read)
+  - 3 casti scoreboardu
+    - stav instrukce, stav funkcnich jednotek (vstupni registry, operace, busy, ...), stav registru vysledku (jaka FU do nej zapisuje)
+  - maly pocet FU = strukturni hazardy
+  - vylepseni: forwardning, pipeline FU, cache/read, mikroprogramovani, ...
+  - centralizovane reizeni
+- Tomasulo algoritmus
+  - cil: vysoky vykon bez pouziti specialnich prekladacu
+  - rizeni a buffery (= rezervacni stanice) jsou distrubuovany mezi FU
+  - registry -> pointery na buffery rezervacnich stanic
+  - spolecna datova sbernice (broadcast vysledku)
+  - operace load a store -> zachazeno jako s funkcnimi jednotky
+  - zaveden jeste pred tim nez se objevili cache pameti
+  - 3 stupne Tomasulova algoritmu
+    - vkladani (*issue*) - prejmenovani a presun registru do bufferu rezervacni stanice => registry prestavaji byt uzkym mistem
+      - zabranuje WAR a WAW hazardum ktere se vyskytovaly u scoreboardingu
+    - provedeni (*execution*) - pokud nejsou operandy k dispozici, sleduje CDB jestli neprisly (vysledek predchozi operace)
+    - zapis vysledku (*write back*) - distribuce vysledku FU po CDB
+  - nevyhody: slozitost, CDB = bottleneck (velka hustota propojovani FU), neprecizni interrupty a vyjimky
+
 ## 11
 
 - HW ztraceni energie: parazitni kapacity, zahrivani rezistoru, spinani tranzistoru, atd.
